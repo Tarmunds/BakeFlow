@@ -16,13 +16,13 @@ from importlib import import_module
 # List your submodules once, in the order you want them registered.
 _SUBMODULES = (
     "BakingSupply.Functions",
+    "BakingSupply.Properties",
     "BakingSupply.Operators",
     "BakingSupply.Panels",
-    "BakingSupply.Properties",
     "MarmosetBridge.Functions",
+    "MarmosetBridge.Properties",
     "MarmosetBridge.Operators",
     "MarmosetBridge.Panels",
-    "MarmosetBridge.Properties",
 )
 
 # Import them relative to this package name
@@ -37,7 +37,6 @@ def register():
             m.register()
 
 def unregister():
-    # Unregister in reverse order to undo UI first
     for m in reversed(_modules):
         if hasattr(m, "unregister"):
             m.unregister()

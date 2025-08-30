@@ -1,4 +1,5 @@
 ﻿import bpy
+from .Functions import _sync_res_y
 
 class MB_MT_Preferences(bpy.types.AddonPreferences):
     bl_idname = __package__
@@ -20,7 +21,7 @@ class MB_MT_Properties(bpy.types.PropertyGroup):
         description="Toggle to enable or disable direct baking",
         default=False
     )
-    SendProperities: bpy.props.BoolProperty(
+    SendProperties: bpy.props.BoolProperty(
         name="Send Properties",
         description="Toggle to show or hide send properties",
         default=True
@@ -32,12 +33,24 @@ class MB_MT_Properties(bpy.types.PropertyGroup):
         default="",
         subtype='DIR_PATH'
     )
-    Samples: bpy.props.IntProperty(
+    SamePathAsMesh: bpy.props.BoolProperty(
+        name="Same Path as Mesh",
+        description="Use the same path as the mesh for baking",
+        default=False
+    )
+    Samples: bpy.props.EnumProperty(
         name="Samples",
         description="Number of samples for baking",
-        default=16,
-        min=1,
-        max=64
+        items=[
+            ('1', "1", "1 sample"),
+            ('2', "2", "2 samples"),
+            ('4', "4", "4 samples"),
+            ('8', "8", "8 samples"),
+            ('16', "16", "16 samples"),
+            ('32', "32", "32 samples"),
+            ('64', "64", "64 samples")
+        ],
+        default='16'
     )
     PixelDepth: bpy.props.EnumProperty(
         name="Pixel Depth",
@@ -58,19 +71,32 @@ class MB_MT_Properties(bpy.types.PropertyGroup):
         ],
         default='SINGLE'
     )
-    ResolutionX: bpy.props.IntProperty(
+    ResolutionX: bpy.props.EnumProperty(
         name="Resolution X",
         description="Width of the baked texture",
-        default=2048,
-        min=256,
-        max=8192
+        items=[
+            ('256', "256", "256 pixels"),
+            ('512', "512", "512 pixels"),
+            ('1024', "1024", "1024 pixels"),
+            ('2048', "2048", "2048 pixels"),
+            ('4096', "4096", "4096 pixels"),
+            ('8192', "8192", "8192 pixels")
+        ],
+        default='2048',
+        update= _sync_res_y
     )
-    ResolutionY: bpy.props.IntProperty(
+    ResolutionY: bpy.props.EnumProperty(
         name="Resolution Y",
         description="Height of the baked texture",
-        default=2048,
-        min=256,
-        max=8192
+        items=[
+            ('256', "256", "256 pixels"),
+            ('512', "512", "512 pixels"),
+            ('1024', "1024", "1024 pixels"),
+            ('2048', "2048", "2048 pixels"),
+            ('4096', "4096", "4096 pixels"),
+            ('8192', "8192", "8192 pixels")
+        ],
+        default='2048'
     )
     FileFormat: bpy.props.EnumProperty(
         name="File Format",
@@ -85,7 +111,10 @@ class MB_MT_Properties(bpy.types.PropertyGroup):
     )
     #-----------Texture-----------#
 
-_classes = (MB_MT_Properties,)
+_classes = (
+    MB_MT_Properties,
+    MB_MT_Preferences,
+)
 
 def register():
     for cls in _classes:
@@ -93,6 +122,6 @@ def register():
     bpy.types.Scene.MB_MT_Properties = bpy.props.PointerProperty(type=MB_MT_Properties)
 
 def unregister():
-    del bpy.types.Scene.MB_BS_Properties
+    del bpy.types.Scene.MB_MT_Properties
     for cls in reversed(_classes):
         bpy.utils.unregister_class(cls)
