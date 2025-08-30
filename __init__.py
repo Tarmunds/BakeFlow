@@ -31,7 +31,7 @@ _modules = tuple(import_module(f".{name}", __name__) for name in _SUBMODULES)
 for m in _modules:
     importlib.reload(m)
 
-def register():
+def register():    
     for m in _modules:
         if hasattr(m, "register"):
             m.register()
