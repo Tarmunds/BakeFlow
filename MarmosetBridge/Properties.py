@@ -1,18 +1,26 @@
 ﻿import bpy
-from .Functions import _sync_res_y
+from dataclasses import dataclass, field
+from typing import Callable, Dict, List, Optional
 
+def _sync_res_y(self, context):
+    # self is the PropertyGroup instance
+    self.ResolutionY = self.ResolutionX
+
+
+ADDON_KEY = (__package__ or __name__).split(".")[0]
 class MB_MT_Preferences(bpy.types.AddonPreferences):
-    bl_idname = __package__
+    bl_idname = ADDON_KEY
+
+    marmoset_path: bpy.props.StringProperty(
+        name="Marmoset Toolbag Path",
+        default=r"C:\Program Files\Marmoset\Toolbag 5\Toolbag.exe",
+        subtype='FILE_PATH'
+    )
 
     def draw(self, context):
         layout = self.layout
         layout.label(text="Marmoset Toolbag Bridge Preferences")
-        marmoset_path: bpy.props.StringProperty(
-            name="Marmoset Toolbag Path",
-            default=r"C:\\Program Files\\Marmoset\\Toolbag 5\\Toolbag.exe",
-            subtype='FILE_PATH'
-        )
-        
+        layout.prop(self, "marmoset_path")
 
 class MB_MT_Properties(bpy.types.PropertyGroup):
     #-----------Exporter-----------#
@@ -110,6 +118,43 @@ class MB_MT_Properties(bpy.types.PropertyGroup):
         default='PNG'
     )
     #-----------Texture-----------#
+
+
+
+# ===================== Config =====================
+@dataclass
+class MarmoConfig:
+    # Required
+    marmoset_path: str
+    export_path: str
+    width: int
+    height: int
+    pixel_bits: int
+    samples: int
+
+    # Optional scene inputs
+    low_fbx: Optional[str] = None
+    high_fbx: Optional[str] = None
+    cage_fbx: Optional[str] = None
+
+    # Common toggles
+    edge_padding: str = "Moderate"
+    soften: int = 0
+    use_hidden_meshes: bool = True
+    ignore_transforms: bool = False
+    smooth_cage: bool = True
+    ignore_backfaces: bool = True
+    tile_mode: int = 0
+    normal_flip_y: bool = False
+    quick_bake: bool = False
+
+    # Maps toggles
+    enable_ao: bool = True
+    enable_curvature: bool = False
+    enable_thickness: bool = False
+
+    # Extensible bag for future one-offs
+    extra: Dict[str, object] = field(default_factory=dict)
 
 _classes = (
     MB_MT_Properties,

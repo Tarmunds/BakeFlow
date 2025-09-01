@@ -142,7 +142,13 @@ class MB_BS_Export(bpy.types.Operator):
         properities = context.scene.MB_BS_Properties
         suffix_to_export = self.suffix_to_export.lower()
         selected_objects = [obj for obj in context.selected_objects if suffix_to_export in obj.name]
-        export_path = os.path.join(scene.mesh_path.strip() or os.path.dirname(bpy.data.filepath), f"{properities.Name}{suffix_to_export}.fbx")
+
+        if properities.ExportPath:
+            export_path = os.path.join(properities.ExportPath.strip(), f"{properities.Name}{suffix_to_export}.fbx")
+        else :
+            export_path = os.path.join(os.path.dirname(bpy.data.filepath), f"{properities.Name}{suffix_to_export}.fbx")
+        
+        self.report({'INFO'}, f"Export Path: {export_path}")
          
         if not selected_objects:
             self.report({'WARNING'}, f"No selected objects with {suffix_to_export} in their names.")

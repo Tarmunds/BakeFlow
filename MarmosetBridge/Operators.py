@@ -1,148 +1,161 @@
-﻿import bpy, os, subprocess, tempfile
+﻿import bpy, os, subprocess, tempfile, textwrap
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Callable, Dict, List, Optional
+from .Functions import ensure, build_marmoset_script, get_prefs, get_path_abs
+from .Properties import MarmoConfig
+from ..BakingSupply.Operators import MB_BS_Export
+
+
+
+# ===================== Presets =====================
+
+class PresetRegistry:
+    _reg: Dict[str, Callable[[MarmoConfig], None]] = {}
+
+    @classmethod
+    def register(cls, name: str):
+        def deco(fn):
+            cls._reg[name] = fn
+            return fn
+        return deco
+
+    @classmethod
+    def apply(cls, name: Optional[str], cfg: MarmoConfig):
+        if name and name in cls._reg:
+            cls._reg[name](cfg)
+
+@PresetRegistry.register("asset_default")
+def _asset_default(cfg: MarmoConfig):
+    cfg.enable_ao = True
+    cfg.enable_curvature = True
+    cfg.enable_thickness = False
+    cfg.normal_flip_y = False
+    cfg.extra["dilate_pixels"] = 8
+
+@PresetRegistry.register("tileable")
+def _tileable(cfg: MarmoConfig):
+    cfg.tile_mode = 1
+    cfg.ignore_backfaces = True
+    cfg.enable_thickness = False
+    cfg.extra["dilate_pixels"] = 16
+
+
+# ===================== Export and Launch =====================
+
+class ExportService:
+    @staticmethod
+    def selection_probe(context):
+        objs = context.selected_objects
+        high_sel = any("_high" in o.name for o in objs)
+        low_sel  = any("_low" in o.name for o in objs)
+        return high_sel, low_sel
+
+    @staticmethod
+    def export_if_needed(context):
+        high_sel, low_sel = ExportService.selection_probe(context)
+        if high_sel:
+            bpy.ops.object.export_selected_operator(suffix_to_export="_high")
+        if low_sel:
+            bpy.ops.object.export_selected_operator(suffix_to_export="_low")
+
+class Launcher:
+    @staticmethod
+    def write_temp_script(code: str) -> str:
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".py")
+        with open(tmp.name, "w", encoding="utf-8") as f:
+            f.write(code)
+        return tmp.name
+
+    @staticmethod
+    def launch(marmoset_path: str, script_path: str):
+        subprocess.Popen([marmoset_path, "-py", script_path], shell=True)
+
+# ===================== Blender Operator =====================
 
 class MB_MT_ExportToMarmoset(bpy.types.Operator):
-    """Exports mesh to Marmoset Toolbag"""
     bl_idname = "object.mb_mt_export_to_marmoset"
-    bl_label = "Export & Launch Marmoset"
+    bl_label = "Export and Launch Marmoset"
+
+    # Optional: let user pick a preset by name via Operator property
+    preset_name: bpy.props.StringProperty(
+        name="Preset", description="Preset name to apply", default="asset_default"
+    )
+
+    def _make_config(self, context) -> MarmoConfig:
+        scene = context.scene
+        #addon_mod = bpy.context.preferences.addons.get(__package__)
+
+        marmoset_path = bpy.path.abspath(get_prefs().marmoset_path)
+        ensure(marmoset_path and os.path.exists(marmoset_path),
+               f"Marmoset Toolbag not found at: {marmoset_path}. Set the correct path in Preferences.")
+
+        ensure(bool(context.scene.MB_BS_Properties.Name.strip()), "Appellation cannot be empty. Please provide a name.")
+
+        #ref to Properties
+        properties = scene.MB_MT_Properties
+        properties_bs = scene.MB_BS_Properties
+
+        # Pick the mesh path base
+        meshes_folder = properties_bs.ExportPath.strip() if properties_bs.ExportPath.strip() else os.path.dirname(bpy.data.filepath)
+        high_fbx = os.path.abspath(os.path.join(meshes_folder, f"{properties_bs.Name}_high.fbx"))
+        low_fbx  = os.path.abspath(os.path.join(meshes_folder, f"{properties_bs.Name}_low.fbx"))
+
+        # ensure at least one of high or low is selected
+        high_sel, low_sel = ExportService.selection_probe(context)
+        ensure(high_sel or low_sel, "No selected objects with '_high' or '_low' in their names.")
+
+        # Choose bake output path
+        if properties.SamePathAsMesh:
+            base_path = properties_bs.ExportPath
+        else:
+            ensure(bool(properties.BakingPath.strip()), "No custom path set for the Baking.")
+            base_path = properties.BakingPath.strip()
+
+        export_path = os.path.join(base_path, f"{properties_bs.Name.strip()}.{properties.FileFormat}").replace("/", "\\")
+
+        cfg = MarmoConfig(
+            marmoset_path=marmoset_path,
+            export_path=export_path,
+            width=properties.ResolutionX,
+            height=properties.ResolutionY,
+            pixel_bits=properties.PixelDepth,
+            samples=properties.Samples,
+            low_fbx=low_fbx if low_sel else None,
+            high_fbx=high_fbx if high_sel else None,
+            normal_flip_y=False,
+            quick_bake=properties.DirectBake,
+        )
+
+        # Apply a named preset if available
+        PresetRegistry.apply(self.preset_name, cfg)
+        return cfg
 
     def execute(self, context):
-        scene = context.scene
-        addon_prefs = bpy.context.preferences.addons.get(__package__)
-        properties = context.scene.MB_MT_Properties
-        properties_BS = context.scene.MB_BS_Properties
-        marmoset_path = addon_prefs.preferences.marmoset_path
-
-        #------------ Sanity Checks ------------#
-        if not addon_prefs:
-            self.report({'ERROR'}, "Failed to retrieve Baking Supply addon preferences.")
+        try:
+            cfg = self._make_config(context)
+        except RuntimeError as e:
+            self.report({'ERROR'}, str(e))
             return {'CANCELLED'}
 
-        if not marmoset_path or not os.path.exists(marmoset_path):
-            self.report({'ERROR'}, f"Marmoset Toolbag not found at: {marmoset_path}. Please set the correct path in Preferences.")
-            return {'CANCELLED'}
+        # Export meshes if needed
+        ExportService.export_if_needed(context)
 
-        if not scene.appelation.strip():
-            self.report({'ERROR'}, "Appellation cannot be empty. Please provide a name.")
-            return {'CANCELLED'}
-        
-        #------------ End Sanity Checks ------------#    
-        
-        #Preset mbake
-        #addon_folder = os.path.dirname(os.path.abspath(__file__))
-        #asset_preset_path = os.path.join(addon_folder, "Tarmunds_Asset.tbbake")
-        #tileable_preset_path = os.path.join(addon_folder, "Tarmunds_Tileable.tbbake")
-
-        Meshes_Folder = properties_BS.ExportPath.strip() if properties_BS.ExportPath.strip() else os.path.dirname(bpy.data.filepath) #use export path or blend file path
-        high_fbx = os.path.abspath(os.path.join(Meshes_Folder, f"{properties_BS.Name}_high.fbx"))
-        low_fbx = os.path.abspath(os.path.join(Meshes_Folder, f"{properties_BS.Name}_low.fbx"))
-
-        high_selected = any(obj for obj in context.selected_objects if "_high" in obj.name)
-        low_selected = any(obj for obj in context.selected_objects if "_low" in obj.name)
-
-        high_fbx_safe = high_fbx.replace("\\", "\\\\") if high_selected else None
-        low_fbx_safe = low_fbx.replace("\\", "\\\\") if low_selected else None
-        asset_preset_safe = asset_preset_path.replace("\\", "\\\\")
-        tileable_preset_safe = tileable_preset_path.replace("\\", "\\\\")
-        custom_preset_safe = custompreset_path.replace("\\", "\\\\")
-
-
-        #------------ Export Selected High and Low ------------#
-        if not high_selected and not low_selected:
-            self.report({'ERROR'}, "No selected objects with '_high' or '_low' in their names.")
-            return {'CANCELLED'}
-        else:
-            if high_selected:
-                bpy.ops.object.export_selected_operator_high()
-            if low_selected:
-                bpy.ops.object.export_selected_operator_low()
-
-        #------------ Select Path ------------#
-        if properties.SamePathAsMesh:
-            Original_path = properties_BS.ExportPath
-        else:
-            if properties.CustomBakePath.strip():
-                Original_path = properties.CustomBakePath.strip()
-            else:
-                self.report({'ERROR'}, "No custom path set for the Baking")
-                return {'CANCELLED'}
-                
-        MarmoBake_ExportPath = os.path.join(Original_path,f"{properties_BS.Name.strip()}.{properties.FileFormat}").replace("/", "\\")
-        #------------ End Path ------------#
-
-        MarmoBake_PixelDepth = properties.PixelDepth
-        MarmoBake_samples = properties.Samples
-        MarmoBake_width = properties.ResolutionX
-        MarmoBake_height = properties.ResolutionY
-
-        NormalDirection = False
-        MarmoBake_QuickBake = properties.DirectBake
-
-
-        marmoset_script = tempfile.NamedTemporaryFile(delete=False, suffix=".py").name
-
-        with open(marmoset_script, "w") as script_file:
-            script_file.write(f"""
-import mset
-
-mset.newScene()
-baker = mset.BakerObject()
-
-{f'baker.importModel(r"{low_fbx_safe}")' if low_selected else ''}
-{f'baker.importModel(r"{high_fbx_safe}")' if high_selected else ''}
-
-baker.outputPath = r"{MarmoBake_ExportPath}"
-baker.outputBits = {MarmoBake_PixelDepth}
-baker.outputSamples = {MarmoBake_samples}
-baker.edgePadding = "Moderate"
-baker.outputSoften = 0
-baker.useHiddenMeshes = True
-baker.ignoreTransforms = False
-baker.smoothCage = True
-baker.ignoreBackfaces = True
-baker.tileMode = 0
-
-baker.outputWidth = {MarmoBake_width}
-baker.outputHeight = {MarmoBake_height}
-
-
-normal_map = None
-for map in baker.getAllMaps():
-    if isinstance(map, mset.NormalBakerMap):  # Check class type instead of `type` attribute
-        normal_map = map
-        break
-
-all_objects = mset.getAllObjects()
-
-# Filter materials
-materials = [obj for obj in all_objects if isinstance(obj, mset.Material)]
-
-# Find the material named "Default"
-default_material = next((mat for mat in materials if mat.name == "Default"), None)
-
-
-if normal_map:
-    normal_map.flipY = {NormalDirection}
-    if default_material:
-        default_material.setProperty("normalFlipY", True)
-        print("Flip Y for normals enabled on Default material.")
-    else:
-        print("Default material not found.")
-
-
-print("Marmoset bake project created and models loaded.")
-
-if {MarmoBake_QuickBake}:
-    baker.bake()
-    baker.applyPreviewMaterial()
-""")
-
-        subprocess.Popen([marmoset_path, "-py", marmoset_script], shell=True)
+        # Build script and launch Toolbag
+        code = build_marmoset_script(cfg)
+        script_path = Launcher.write_temp_script(code)
+        Launcher.launch(cfg.marmoset_path, script_path)
         self.report({'INFO'}, "Marmoset Toolbag launched and setup.")
         return {'FINISHED'}
     
-#------------ Register and Unregister ------------#
-def register():
-    bpy.utils.register_class(MB_MT_ExportToMarmoset)
+_classes = (
+    MB_MT_ExportToMarmoset,
+)
 
+def register():
+    for cls in _classes:
+        bpy.utils.register_class(cls)
+        
 def unregister():
-    bpy.utils.unregister_class(MB_MT_ExportToMarmoset)
+    for cls in reversed(_classes):
+        bpy.utils.unregister_class(cls)
