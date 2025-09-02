@@ -2,11 +2,54 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
-from .Functions import ensure, build_marmoset_script, get_prefs, get_path_abs
+from .Functions import ensure, build_marmoset_script, get_prefs, get_path_abs, next_unused_enum
 from .Properties import MarmoConfig
-from ..BakingSupply.Operators import MB_BS_Export
 
+# ===================== Ui List Operators =====================
 
+class MB_MT_Map_add(bpy.types.Operator):
+    bl_idname = "ui_list.mb_mt_map_add"
+    bl_label = "Add Item"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        ui_container = context.scene.MB_MT_MapContainer
+        new_item = ui_container.maps.add()
+        new_item.map_enable = True                              # <-- snake_case
+        new_item.map_type = next_unused_enum(ui_container)      # <-- snake_case
+        ui_container.active_map_index = len(ui_container.maps) - 1
+        return {'FINISHED'}
+
+class MB_MT_Map_remove(bpy.types.Operator):
+    bl_idname = "ui_list.mb_mt_map_remove"
+    bl_label = "Remove Item"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        ui_container = context.scene.MB_MT_MapContainer
+        index = context.scene.MB_MT_MapContainer.active_map_index
+        if ui_container.maps:
+            ui_container.maps.remove(index)
+            if ui_container.active_map_index >= len(ui_container.maps):
+                ui_container.active_map_index = min(max(0, index - 1), len(ui_container.maps) - 1)
+        return {'FINISHED'}
+
+class MB_MT_Map_move(bpy.types.Operator):
+    bl_idname = "ui_list.mb_mt_map_move"
+    bl_label = "Move Item"
+    direction: bpy.props.EnumProperty(items=(('UP', 'Up', ""), ('DOWN', 'Down', "")))
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context):
+        ui_container = context.scene.MB_MT_MapContainer
+        index = ui_container.active_map_index
+        if self.direction == 'UP' and index > 0:
+            ui_container.maps.move(index, index - 1)
+            ui_container.active_map_index -= 1
+        elif self.direction == 'DOWN' and index < len(ui_container.maps) - 1:
+            ui_container.maps.move(index, index + 1)
+            ui_container.active_map_index += 1
+        return {'FINISHED'}
 
 # ===================== Presets =====================
 
@@ -112,7 +155,7 @@ class MB_MT_ExportToMarmoset(bpy.types.Operator):
             ensure(bool(properties.BakingPath.strip()), "No custom path set for the Baking.")
             base_path = properties.BakingPath.strip()
 
-        export_path = os.path.join(base_path, f"{properties_bs.Name.strip()}.{properties.FileFormat}").replace("/", "\\")
+        export_path = os.path.join(base_path, f"{properties_bs.Name.strip()}.{properties.FileFormat.lower()}").replace("/", "\\")
 
         cfg = MarmoConfig(
             marmoset_path=marmoset_path,
@@ -150,6 +193,9 @@ class MB_MT_ExportToMarmoset(bpy.types.Operator):
     
 _classes = (
     MB_MT_ExportToMarmoset,
+    MB_MT_Map_add,
+    MB_MT_Map_remove,
+    MB_MT_Map_move,
 )
 
 def register():

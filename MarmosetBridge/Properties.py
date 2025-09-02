@@ -1,11 +1,80 @@
 ﻿import bpy
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional
+from .MapProperties import *
 
+# ===================== Update Functions =====================
 def _sync_res_y(self, context):
     # self is the PropertyGroup instance
     self.ResolutionY = self.ResolutionX
 
+def _UpdateFormat(self, context):
+    Format = self.FileFormat
+    Depth = int(self.PixelDepth)
+
+    match Format:
+        case 'JPG':
+            if Depth in {16, 32}:
+                self.PixelDepth = '8'
+                try:
+                    self.report({'WARNING'}, f"{Format} format only supports 8-bit depth. Pixel Depth has been set to 8-bit.")
+                except AttributeError:
+                    bpy.context.window_manager.popup_menu(
+                        lambda s, c: s.layout.label(text="JPG: 8-bits only. Set to 8-bits.", icon='ERROR'),
+                        title="Warning"
+                    )
+        case 'TGA':
+            if Depth in {16, 32}:
+                self.PixelDepth = '8'
+                try:
+                    self.report({'WARNING'}, f"{Format} format only supports 8-bit depth. Pixel Depth has been set to 8-bit.")
+                except AttributeError:
+                    bpy.context.window_manager.popup_menu(
+                        lambda s, c: s.layout.label(text="TGA: 8-bits only. Set to 8-bits.", icon='ERROR'),
+                        title="Warning"
+                    )
+        case 'PNG':
+            if Depth == 32:
+                self.PixelDepth = '16'
+                try:
+                    self.report({'WARNING'}, f"{Format} format only supports 8 and 16-bit depth. Pixel Depth has been set to 16-bit.")
+                except AttributeError:
+                    bpy.context.window_manager.popup_menu(
+                        lambda s, c: s.layout.label(text="JPG: 8 and 16-bits only. Set to 16-bits.", icon='ERROR'),
+                        title="Warning"
+                    )
+        case _:
+            pass
+
+def _UpdateDepth(self, context):
+    Format = self.FileFormat
+    Depth = int(self.PixelDepth)
+
+    match Depth:
+        case 32 if Format != 'PSD':
+            self.FileFormat = 'PSD'
+            try:
+                self.report({'WARNING'}, "32-bit depth is only supported with PSD. File Format set to PSD.")
+            except AttributeError:
+                bpy.context.window_manager.popup_menu(
+                    lambda s, c: s.layout.label(text="32-bit: PSD only. Set to PSD.", icon='ERROR'),
+                    title="Warning"
+                )
+
+        case 16 if Format not in {'PSD', 'PNG'}:
+            self.FileFormat = 'PNG'
+            try:
+                self.report({'WARNING'}, "16-bit depth is only supported with PNG or PSD. File Format set to PNG.")
+            except AttributeError:
+                bpy.context.window_manager.popup_menu(
+                    lambda s, c: s.layout.label(text="16-bit: PNG or PSD. Set to PNG.", icon='ERROR'),
+                    title="Warning"
+                )
+
+        case _:
+            pass
+
+# ===================== Addon Preferences & Properties =====================
 
 ADDON_KEY = (__package__ or __name__).split(".")[0]
 class MB_MT_Preferences(bpy.types.AddonPreferences):
@@ -31,7 +100,12 @@ class MB_MT_Properties(bpy.types.PropertyGroup):
     )
     SendProperties: bpy.props.BoolProperty(
         name="Send Properties",
-        description="Toggle to show or hide send properties",
+        description="Toggle to send or not Baker properties",
+        default=True
+    )
+    SendMapSettings: bpy.props.BoolProperty(
+        name="Send Map Settings",
+        description="Toggle to send or not Map properties",
         default=True
     )
     #-----------Baker-----------#
@@ -68,7 +142,8 @@ class MB_MT_Properties(bpy.types.PropertyGroup):
             ('16', "16-bit", "16-bit per channel"),
             ('32', "32-bit", "32-bit per channel")
         ],
-        default='8'
+        default='8',
+        update= _UpdateDepth
     )
     TileMode: bpy.props.EnumProperty(
         name="Tile Mode",
@@ -78,6 +153,11 @@ class MB_MT_Properties(bpy.types.PropertyGroup):
             ('MULTI', "Multiple Texture Sets", "Bake to multiple texture sets")
         ],
         default='SINGLE'
+    )
+    NonSquareTextures: bpy.props.BoolProperty(
+        name="Non-Square Textures",
+        description="Allow non-square textures",
+        default=False
     )
     ResolutionX: bpy.props.EnumProperty(
         name="Resolution X",
@@ -115,9 +195,58 @@ class MB_MT_Properties(bpy.types.PropertyGroup):
             ('TGA', "TGA", "Targa"),
             ('PSD', "PSD", "Photoshop Document"),
         ],
-        default='PNG'
+        default='PNG',
+        update= _UpdateFormat
     )
     #-----------Texture-----------#
+
+# ===================== Ui List =====================
+
+Map_Types = [
+    ('NORMAL', 'Normal', 'Normal Map'),
+    ('NORMAL_OBJ', 'Normal Obj', 'World SPace Normal Map'),
+    ('HEIGHT', 'Height', 'Height Map'),
+    ('POSITION', 'Position', 'Position Map'),
+    ('CURVATURE', 'Curvature', 'Curvature Map'),
+    ('THICKNESS', 'Thickness', 'Thickness Map'),
+    ('AMBIANT_OCCLUSION', 'AO', 'Ambient Occlusion Map'),
+    ('AMBIANT_OCCLUSION_2', 'AO 2', 'Ambient Occlusion Map'),
+    ('OBJECT_ID', 'Object ID', 'Object ID Map'),
+    ('MATERIAL_ID', 'Material ID', 'Material ID Map'),
+]
+
+class MB_MT_MapItem(bpy.types.PropertyGroup):
+    map_enable: bpy.props.BoolProperty(
+        name="Enable",
+        description="Enable or disable this map for baking",
+        default=True
+    )
+    map_type: bpy.props.EnumProperty(
+        name="Map Type",
+        description="Type of map to bake",
+        items=Map_Types,
+        default='NORMAL'
+    )
+            
+
+class MB_MT_MapContainer(bpy.types.PropertyGroup):
+    maps: bpy.props.CollectionProperty(type=MB_MT_MapItem)
+    active_map_index: bpy.props.IntProperty(name="Active Index", default=0)
+    
+class MB_MT_MapList(bpy.types.UIList):
+    """UIList to display and manage baking maps"""
+    bl_idname = "MB_MT_map_list"
+
+    def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
+        map_item = item
+        if self.layout_type in {'DEFAULT', 'COMPACT'}:
+            row = layout.row(align=True)
+            row.prop(map_item, "map_enable", text="")
+            row.label(text="")
+            row.prop(map_item, "map_type", text="")
+        elif self.layout_type in {'GRID'}:
+            layout.alignment = 'CENTER'
+            layout.prop(map_item, "map_type", text="")
 
 
 
@@ -156,17 +285,23 @@ class MarmoConfig:
     # Extensible bag for future one-offs
     extra: Dict[str, object] = field(default_factory=dict)
 
+
 _classes = (
     MB_MT_Properties,
     MB_MT_Preferences,
+    MB_MT_MapItem,
+    MB_MT_MapContainer,
+    MB_MT_MapList,
 )
 
 def register():
     for cls in _classes:
         bpy.utils.register_class(cls)
     bpy.types.Scene.MB_MT_Properties = bpy.props.PointerProperty(type=MB_MT_Properties)
+    bpy.types.Scene.MB_MT_MapContainer = bpy.props.PointerProperty(type=MB_MT_MapContainer)
 
 def unregister():
+    del bpy.types.Scene.MB_MT_MapContainer
     del bpy.types.Scene.MB_MT_Properties
     for cls in reversed(_classes):
         bpy.utils.unregister_class(cls)

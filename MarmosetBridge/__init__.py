@@ -1,1 +1,1 @@
-﻿__all__ = ["Functions", "Operators", "Properties", "Panels"]
+﻿__all__ = ["Functions", "Operators","MapProperties", "Properties", "Panels"]

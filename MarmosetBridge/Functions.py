@@ -1,6 +1,6 @@
 ﻿import bpy, textwrap, subprocess, tempfile, os
 from pathlib import Path
-from .Properties import MarmoConfig
+from .Properties import MarmoConfig, Map_Types
 from typing import Callable, Dict, List, Optional
 
 def GoToLine(layout, *, scale_y=1.2, align=True):
@@ -26,6 +26,15 @@ def get_path_abs() -> str:
     """Return the absolute, Blender-evaluated path."""
     return bpy.path.abspath(get_prefs().marmoset_path)
 
+def next_unused_enum(container):
+    if len(container.maps)==1:
+        return Map_Types[0][0]
+    used_types = {item.map_type for item in container.maps}
+    for enum_value, _, _ in Map_Types:
+        if enum_value not in used_types:
+            return enum_value
+    # fallback: reuse first entry
+    return Map_Types[0][0]
 
 
 # ===================== Builder =====================
@@ -74,23 +83,27 @@ def sec_core_params(sb: ScriptBuilder, cfg: MarmoConfig):
     sb.assign("baker.smoothCage",      str(cfg.smooth_cage))
     sb.assign("baker.ignoreBackfaces", str(cfg.ignore_backfaces))
     sb.assign("baker.tileMode",        str(cfg.tile_mode))
-    # Example of a flexible extra
-    if "dilate_pixels" in cfg.extra:
-        sb.assign("baker.dilate", str(int(cfg.extra["dilate_pixels"])))
+
 
 def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
-    sb.section("""
-    normal_map = None
-    for _map in baker.getAllMaps():
-        if isinstance(_map, mset.NormalBakerMap):
-            normal_map = _map
-            break
-    """)
-    sb.line_if(True, f"if normal_map: normal_map.flipY = {cfg.normal_flip_y}")
+    #sb.section("""
+    #normal_map = None
+    #for _map in baker.getAllMaps():
+    #    if isinstance(_map, mset.NormalBakerMap):
+    #        normal_map = _map
+    #        break
+    #""")
+    #sb.line_if(True, f"if normal_map: normal_map.flipY = {cfg.normal_flip_y}")
 
-    sb.line_if(cfg.enable_ao,        "ao = mset.AmbientOcclusionBakerMap()")
-    sb.line_if(cfg.enable_curvature, "curv = mset.CurvatureBakerMap()")
-    sb.line_if(cfg.enable_thickness, "thick = mset.ThicknessBakerMap()")
+    #sb.line_if(cfg.enable_ao,        "ao = mset.AmbientOcclusionBakerMap()")
+    #sb.line_if(cfg.enable_curvature, "curv = mset.CurvatureBakerMap()")
+    #sb.line_if(cfg.enable_thickness, "thick = mset.ThicknessBakerMap()")
+    sb.section("""
+    # Clear existing maps
+    existing_maps = baker.getAllMaps()
+    for m in existing_maps:
+        m.enabled = False
+    """)
 
 def sec_material_sync(sb: ScriptBuilder, cfg: MarmoConfig):
     sb.section(f"""
@@ -112,6 +125,6 @@ def build_marmoset_script(cfg: MarmoConfig) -> str:
     sec_imports(sb, cfg)
     sec_core_params(sb, cfg)
     sec_maps(sb, cfg)
-    sec_material_sync(sb, cfg)
+    #sec_material_sync(sb, cfg)
     sec_finalize(sb, cfg)
     return sb.build()

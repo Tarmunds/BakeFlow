@@ -20,6 +20,7 @@ _SUBMODULES = (
     "BakingSupply.Operators",
     "BakingSupply.Panels",
     "MarmosetBridge.Functions",
+    "MarmosetBridge.MapProperties",
     "MarmosetBridge.Properties",
     "MarmosetBridge.Operators",
     "MarmosetBridge.Panels",
