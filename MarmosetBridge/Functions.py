@@ -1,6 +1,7 @@
 ﻿import bpy, textwrap, subprocess, tempfile, os
 from pathlib import Path
 from .Properties import MarmoConfig, Map_Types
+from .MapProperties import MAP_TYPE_TO_SETTINGS
 from typing import Callable, Dict, List, Optional
 
 def GoToLine(layout, *, scale_y=1.2, align=True):
@@ -86,24 +87,125 @@ def sec_core_params(sb: ScriptBuilder, cfg: MarmoConfig):
 
 
 def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
-    #sb.section("""
-    #normal_map = None
-    #for _map in baker.getAllMaps():
-    #    if isinstance(_map, mset.NormalBakerMap):
-    #        normal_map = _map
-    #        break
-    #""")
-    #sb.line_if(True, f"if normal_map: normal_map.flipY = {cfg.normal_flip_y}")
-
-    #sb.line_if(cfg.enable_ao,        "ao = mset.AmbientOcclusionBakerMap()")
-    #sb.line_if(cfg.enable_curvature, "curv = mset.CurvatureBakerMap()")
-    #sb.line_if(cfg.enable_thickness, "thick = mset.ThicknessBakerMap()")
+    properties = bpy.context.scene.MB_MT_Properties #get the properties from the context
+    map_container = bpy.context.scene.MB_MT_MapContainer
+    enable_map_types = [item.map_type for item in map_container.maps if item.map_enable]
+    
     sb.section("""
     # Clear existing maps
     existing_maps = baker.getAllMaps()
     for m in existing_maps:
         m.enabled = False
     """)
+
+    if 'NORMAL' in enable_map_types:
+        sb.section(f"""
+        normal_map = baker.getMap("Normals")
+        normal_map.enabled = True
+        normal_map.suffix = "{str(bpy.context.scene.MB_MT_NormalSettings.suffix)[1:]}"
+                
+        normal_map.flipX = {bpy.context.scene.MB_MT_NormalSettings.flip_x}
+        normal_map.flipY = {bpy.context.scene.MB_MT_NormalSettings.flip_y}
+        normal_map.flipZ = {bpy.context.scene.MB_MT_NormalSettings.flip_z}
+        
+        print(dir(normal_map))
+        """) #bug of flipping normal due to error in the api, Request made on marmoset server
+
+    
+    if 'NORMAL_OBJ' in enable_map_types:
+        sb.section(f"""
+        normal_obj_map = baker.getMap("Normals (Object)")
+        normal_obj_map.enabled = True
+        normal_obj_map.suffix = "{str(bpy.context.scene.MB_MT_NormalOBJSettings.suffix)[1:]}"
+        
+        normal_obj_map.flipX = {bpy.context.scene.MB_MT_NormalOBJSettings.flip_x}
+        normal_obj_map.flipY = {bpy.context.scene.MB_MT_NormalOBJSettings.flip_y}
+        normal_obj_map.flipZ = {bpy.context.scene.MB_MT_NormalOBJSettings.flip_z}
+        """) #bug of flipping normal due to error in the api, Request made on marmoset server
+    
+    if 'HEIGHT' in enable_map_types:
+        sb.section(f"""
+        height_map = baker.getMap("Height")
+        height_map.enabled = True
+        height_map.suffix = "{str(bpy.context.scene.MB_MT_HeightSettings.suffix)[1:]}"
+        height_map.innerDistance = {bpy.context.scene.MB_MT_HeightSettings.inner_distance}
+        height_map.outerDistance = {bpy.context.scene.MB_MT_HeightSettings.outer_distance}
+        """)
+    
+    if 'POSITION' in enable_map_types:
+        sb.section(f"""
+        position_map = baker.getMap("Position")
+        position_map.enabled = True
+        position_map.suffix = "{str(bpy.context.scene.MB_MT_PositionSettings.suffix)[1:]}"
+        normalization_properities = "{str(bpy.context.scene.MB_MT_PositionSettings.normalization)}"
+        match normalization_properities:
+            case "BOUNDINGBOX":
+                position_map.normalization = "Bounding Box"
+            case "BOUNDINGSPHERE":
+                position_map.normalization = "Bounding Sphere"
+            case "DISABLED":
+                position_map.normalization = "Disabled"
+        """)
+            
+
+    
+    if 'CURVATURE' in enable_map_types:
+        sb.section(f"""
+        curvature_map = baker.getMap("Curvature")
+        curvature_map.enabled = True
+        curvature_map.suffix = "{str(bpy.context.scene.MB_MT_CurveSettings.suffix)[1:]}"
+        curvature_map.strength = {bpy.context.scene.MB_MT_CurveSettings.strength}
+        """)
+    
+    if 'THICKNESS' in enable_map_types:
+        sb.section(f"""
+        thickness_map = baker.getMap("Thickness")
+        thickness_map.enabled = True
+        thickness_map.suffix = "{str(bpy.context.scene.MB_MT_ThicknessSettings.suffix)[1:]}"
+        thickness_map.rayCount = {bpy.context.scene.MB_MT_ThicknessSettings.ray_count}
+        """)
+    
+    if 'AMBIANT_OCCLUSION' in enable_map_types:
+        sb.section(f"""
+        ao_map = baker.getMap("Ambient Occlusion")
+        ao_map.enabled = True
+        ao_map.suffix = "{str(bpy.context.scene.MB_MT_AOSettings.suffix)[1:]}"
+        ao_map.rayCount = {bpy.context.scene.MB_MT_AOSettings.ray_count}
+        ao_map.searchDistance = {bpy.context.scene.MB_MT_AOSettings.search_distance}
+        ao_map.cosineWeight = {bpy.context.scene.MB_MT_AOSettings.cavity_weight}
+        ao_map.floorOcclusion = {bpy.context.scene.MB_MT_AOSettings.floor_occlusion}
+        ao_map.floor = {bpy.context.scene.MB_MT_AOSettings.floor_strength}
+        ao_map.twoSided = {bpy.context.scene.MB_MT_AOSettings.two_sided}
+        ao_map.ignoreGroups = {bpy.context.scene.MB_MT_AOSettings.ignore_groups}
+        
+        """)
+    
+    if 'AMBIANT_OCCLUSION_2' in enable_map_types:
+        sb.section(f"""
+        ao2_map = baker.getMap("Ambient Occlusion (2)")
+        ao2_map.enabled = True
+        ao2_map.suffix = "{str(bpy.context.scene.MB_MT_AO2Settings.suffix)[1:]}"
+        ao2_map.rayCount = {bpy.context.scene.MB_MT_AO2Settings.ray_count}
+        ao2_map.searchDistance = {bpy.context.scene.MB_MT_AO2Settings.search_distance}
+        ao2_map.cosineWeight = {bpy.context.scene.MB_MT_AO2Settings.cavity_weight}
+        ao2_map.floorOcclusion = {bpy.context.scene.MB_MT_AO2Settings.floor_occlusion}
+        ao2_map.floor = {bpy.context.scene.MB_MT_AO2Settings.floor_strength}
+        ao2_map.twoSided = {bpy.context.scene.MB_MT_AO2Settings.two_sided}
+        ao2_map.ignoreGroups = {bpy.context.scene.MB_MT_AO2Settings.ignore_groups}
+        """)
+    
+    if 'OBJECT_ID' in enable_map_types:
+        sb.section(f"""
+        object_id_map = baker.getMap("Object ID")
+        object_id_map.enabled = True
+        """)
+        
+    if 'MATERIAL_ID' in enable_map_types:
+        sb.section(f"""
+        material_id_map = baker.getMap("Material ID")
+        material_id_map.enabled = True
+        """)
+    
 
 def sec_material_sync(sb: ScriptBuilder, cfg: MarmoConfig):
     sb.section(f"""

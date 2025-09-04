@@ -1,0 +1,168 @@
+﻿mset.NormalBakerMap {
+    flipX : False,
+    flipY : False,
+    flipZ : False,
+    dither : True,
+    suffix : "normal",
+    enabled : False,
+}
+mset.NormalBakerMap {
+    flipX : False,
+    flipY : False,
+    flipZ : False,
+    dither : True,
+    suffix : "normalobj",
+    enabled : False,
+}
+mset.HeightBakerMap {
+    dither : True,
+    innerDistance : -0.5,
+    outerDistance : 0.5,
+    suffix : "height",
+    enabled : False,
+}
+mset.PositionBakerMap {
+    normalization : "Bounding Sphere",
+    suffix : "position",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "albedo",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "gloss",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "spec",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "albedometal",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "roughness",
+    enabled : False,
+}
+mset.MetalnessBakerMap {
+    suffix : "metalness",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "emissive",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "alpha",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "vertexcolor",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "matid",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "objid",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "grpid",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "grpid",
+    enabled : False,
+}
+mset.CurvatureBakerMap {
+    strength : 1.0,
+    dither : True,
+    suffix : "curve",
+    enabled : False,
+}
+mset.CurvatureBakerMap {
+    strength : 1.0,
+    dither : True,
+    suffix : "convex",
+    enabled : False,
+}
+mset.CurvatureBakerMap {
+    strength : 1.0,
+    dither : True,
+    suffix : "cavity",
+    enabled : False,
+}
+mset.UVIslandBakerMap {
+    enableSVGUIVIsland : False,
+    suffix : "uvisland",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "wireframe",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "alphamask",
+    enabled : False,
+}
+mset.AOBakerMap {
+    rayCount : 1024,
+    dither : True,
+    floor : 0.800000011920929,
+    floorOcclusion : False,
+    ignoreGroups : True,
+    twoSided : False,
+    cosineWeight : 0.0,
+    searchDistance : 0.0,
+    suffix : "ao",
+    enabled : False,
+}
+mset.AOBakerMap {
+    rayCount : 1024,
+    dither : True,
+    floor : 0.800000011920929,
+    floorOcclusion : True,
+    ignoreGroups : True,
+    twoSided : False,
+    cosineWeight : 0.0,
+    searchDistance : 0.0,
+    suffix : "ao2",
+    enabled : False,
+}
+mset.ThicknessBakerMap {
+    rayCount : 256,
+    dither : True,
+    suffix : "thickness",
+    enabled : False,
+}
+mset.BentNormalBakerMap {
+    rayCount : 256,
+    dither : True,
+    flipX : False,
+    flipY : False,
+    flipZ : False,
+    searchDistance : 0.0,
+    ignoreGroups : True,
+    suffix : "bentnormal",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "complete",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "diffuse",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "specular",
+    enabled : False,
+}
+mset.BakerMap {
+    suffix : "indirect",
+    enabled : False,
+}

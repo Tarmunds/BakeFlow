@@ -18,6 +18,12 @@ class MB_MT_NormalSettings(bpy.types.PropertyGroup):
         flips.prop(self, "flip_x")
         flips.prop(self, "flip_y")
         flips.prop(self, "flip_z")
+        row = box.row()
+        row.alert = True
+        row.label(text="Note: Normal map flipping might not work due to a bug in Marmoset Toolbag API.", icon='ERROR')
+        row = box.row()
+        row.alert = True
+        row.label(text="Request has been made to Marmoset support to fix this issue.")
 
 class MB_MT_NormalOBJSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_normalobj")
@@ -40,8 +46,8 @@ class MB_MT_NormalOBJSettings(bpy.types.PropertyGroup):
 
 class MB_MT_HeightSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_height")
-    inner_distance: bpy.props.FloatProperty(name="Inner Distance", default=-0.5)
-    outer_distance: bpy.props.FloatProperty(name="Outer Distance", default=0.5)
+    inner_distance: bpy.props.FloatProperty(name="Inner Distance", default=-0.5, min=-100.0, max=100.0)
+    outer_distance: bpy.props.FloatProperty(name="Outer Distance", default=0.5, min=-100.0, max=100.0)
 
     def draw(self, layout):
         box = layout.box()
@@ -104,6 +110,12 @@ class MB_MT_ThicknessSettings(bpy.types.PropertyGroup):
         row = box.row(align=True)
         row.prop(self, "ignore_groups")
         row.prop(self, "gamma")
+        row = box.row()
+        row.alert = True
+        row.label(text="Note: Except ray count all other attribute will not work due to a bug in Marmoset Toolbag API.", icon='ERROR')
+        row = box.row()
+        row.alert = True
+        row.label(text="Request has been made to Marmoset support to fix this issue.")
 
 class MB_MT_AOSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_ao")
