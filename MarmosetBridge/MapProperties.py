@@ -15,6 +15,7 @@ class MB_MT_NormalSettings(bpy.types.PropertyGroup):
         col = box.column(align=True)
         col.label(text="Flip Channels")
         flips = col.row(align=True)
+        flips.enabled = False #disable due to marmoset issue
         flips.prop(self, "flip_x")
         flips.prop(self, "flip_y")
         flips.prop(self, "flip_z")
@@ -105,9 +106,14 @@ class MB_MT_ThicknessSettings(bpy.types.PropertyGroup):
         row.prop(self, "suffix")
         col = box.column(align=True)
         col.prop(self, "ray_count")
-        col.prop(self, "search_distance")
-        col.prop(self, "scale")
+        row = box.row()
+        row.enabled = False #disable due to marmoset issue
+        row.prop(self, "search_distance")
+        row = box.row()
+        row.enabled = False #disable due to marmoset issue
+        row.prop(self, "scale")
         row = box.row(align=True)
+        row.enabled = False #disable due to marmoset issue
         row.prop(self, "ignore_groups")
         row.prop(self, "gamma")
         row = box.row()

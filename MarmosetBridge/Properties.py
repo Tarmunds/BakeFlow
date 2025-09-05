@@ -1,4 +1,4 @@
-﻿import bpy
+﻿import bpy, os, shutil
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional
 from .MapProperties import *
@@ -286,6 +286,9 @@ class MarmoConfig:
     extra: Dict[str, object] = field(default_factory=dict)
 
 
+# ===================== Registration =====================
+
+
 _classes = (
     MB_MT_Properties,
     MB_MT_Preferences,
@@ -299,6 +302,8 @@ def register():
         bpy.utils.register_class(cls)
     bpy.types.Scene.MB_MT_Properties = bpy.props.PointerProperty(type=MB_MT_Properties)
     bpy.types.Scene.MB_MT_MapContainer = bpy.props.PointerProperty(type=MB_MT_MapContainer)
+
+
 
 def unregister():
     del bpy.types.Scene.MB_MT_MapContainer

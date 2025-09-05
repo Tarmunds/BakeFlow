@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
+from bl_operators.presets import AddPresetBase
 from .Functions import ensure, build_marmoset_script, get_prefs, get_path_abs, next_unused_enum
 from .Properties import MarmoConfig
 
@@ -190,12 +191,85 @@ class MB_MT_ExportToMarmoset(bpy.types.Operator):
         Launcher.launch(cfg.marmoset_path, script_path)
         self.report({'INFO'}, "Marmoset Toolbag launched and setup.")
         return {'FINISHED'}
+
+
+# ===================== Preset Operator =====================
+
+class MB_MT_MapProperties_AddPreset(AddPresetBase, bpy.types.Operator):
+    bl_idname = 'mbmt.mapproperties_addpreset'
+    bl_label = 'Add preset'
+    preset_menu = 'MB_MT_MapPanel_Presets'
+
+    preset_defines = [ 'bakerproperties = bpy.context.scene.MB_MT_Properties',
+                       'mapcontainer = bpy.context.scene.MB_MT_MapContainer',
+                       'normalsettings = bpy.context.scene.MB_MT_NormalSettings',
+                       'normalobjsettings = bpy.context.scene.MB_MT_NormalOBJSettings',
+                       'heightsettings = bpy.context.scene.MB_MT_HeightSettings',
+                       'positionsettings = bpy.context.scene.MB_MT_PositionSettings',
+                       'curvesettings = bpy.context.scene.MB_MT_CurveSettings',
+                       'thicknesssettings = bpy.context.scene.MB_MT_ThicknessSettings',
+                       'aosettings = bpy.context.scene.MB_MT_AOSettings',
+                       'ao2settings = bpy.context.scene.MB_MT_AO2Settings',
+                       ]
+    preset_values = [
+        'bakerproperties.BakingPath',
+        'bakerproperties.ResolutionX',
+        'bakerproperties.ResolutionY',
+        'bakerproperties.PixelDepth',
+        'bakerproperties.Samples',
+        'bakerproperties.FileFormat',
+        'bakerproperties.TileMode',
+        'bakerproperties.DirectBake',
+        'bakerproperties.SamePathAsMesh',
+        'mapcontainer.maps',
+        'mapcontainer.active_map_index',
+        'normalsettings.suffix',
+        'normalsettings.flip_x',
+        'normalsettings.flip_y',
+        'normalsettings.flip_z',
+        'normalobjsettings.suffix',
+        'normalobjsettings.flip_x',
+        'normalobjsettings.flip_y',
+        'normalobjsettings.flip_z',
+        'heightsettings.suffix',
+        'heightsettings.inner_distance',
+        'heightsettings.outer_distance',
+        'positionsettings.suffix',
+        'positionsettings.normalization',
+        'curvesettings.suffix',
+        'curvesettings.strength',
+        'thicknesssettings.suffix',
+        'thicknesssettings.ray_count',
+        'thicknesssettings.search_distance',
+        'thicknesssettings.scale',
+        'thicknesssettings.ignore_groups',
+        'thicknesssettings.gamma',
+        'aosettings.suffix',
+        'aosettings.ray_count',
+        'aosettings.search_distance',
+        'aosettings.cavity_weight',
+        'aosettings.floor_occlusion',
+        'aosettings.floor_strength',
+        'aosettings.ignore_groups',
+        'aosettings.two_sided',
+        'ao2settings.suffix',
+        'ao2settings.ray_count',
+        'ao2settings.search_distance',
+        'ao2settings.cavity_weight',
+        'ao2settings.floor_occlusion',
+        'ao2settings.floor_strength',
+        'ao2settings.ignore_groups',
+        'ao2settings.two_sided',
+    ]
+
+    preset_subdir = 'MapPresets'
     
 _classes = (
     MB_MT_ExportToMarmoset,
     MB_MT_Map_add,
     MB_MT_Map_remove,
     MB_MT_Map_move,
+    MB_MT_MapProperties_AddPreset,
 )
 
 def register():

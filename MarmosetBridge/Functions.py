@@ -100,12 +100,16 @@ def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
 
     if 'NORMAL' in enable_map_types:
         sb.section(f"""
-        normal_map = baker.getMap("Normals")
+        for map in baker.getAllMaps():
+            if isinstance(map, mset.NormalBakerMap):  # Check class type instead of `type` attribute due to flip y issue
+                normal_map = map
+                break
+        #normal_map = baker.getMap("Normals")
         normal_map.enabled = True
         normal_map.suffix = "{str(bpy.context.scene.MB_MT_NormalSettings.suffix)[1:]}"
                 
         normal_map.flipX = {bpy.context.scene.MB_MT_NormalSettings.flip_x}
-        normal_map.flipY = {bpy.context.scene.MB_MT_NormalSettings.flip_y}
+        normal_map.flipY = True #{bpy.context.scene.MB_MT_NormalSettings.flip_y}
         normal_map.flipZ = {bpy.context.scene.MB_MT_NormalSettings.flip_z}
         
         print(dir(normal_map))

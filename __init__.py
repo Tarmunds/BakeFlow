@@ -2,7 +2,7 @@
 bl_info = {
     "name": "Marmoset Bridge",
     "author": "Tarmunds",
-    "version": (0, 1, 0),
+    "version": (0, 5, 0),
     "blender": (4, 5, 0),
     "location": "View3D > Tarmunds Addons > Marmoset Bridge",
     "description": "",
