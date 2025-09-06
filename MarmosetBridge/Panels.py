@@ -52,6 +52,8 @@ class MB_MT_Panel(bpy.types.Panel):
         row = GoToLine(layout)
         row.prop(properties, "TileMode")
         row = GoToLine(layout)
+        row.prop(properties, "NormalOrientation", expand=True)
+        row = GoToLine(layout)
         row.prop(properties, "NonSquareTextures",text="Non Square Texture" , toggle=True)
         row.prop(properties, "ResolutionX", text="   X")
         sub = row.row()

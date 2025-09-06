@@ -1,5 +1,5 @@
 import bpy
-bakerproperties = bpy.context.scene.MB_MT_Properties
+
 mapcontainer = bpy.context.scene.MB_MT_MapContainer
 normalsettings = bpy.context.scene.MB_MT_NormalSettings
 normalobjsettings = bpy.context.scene.MB_MT_NormalOBJSettings
@@ -10,15 +10,6 @@ thicknesssettings = bpy.context.scene.MB_MT_ThicknessSettings
 aosettings = bpy.context.scene.MB_MT_AOSettings
 ao2settings = bpy.context.scene.MB_MT_AO2Settings
 
-bakerproperties.BakingPath = ''
-bakerproperties.ResolutionX = '2048'
-bakerproperties.ResolutionY = '2048'
-bakerproperties.PixelDepth = '8'
-bakerproperties.Samples = '16'
-bakerproperties.FileFormat = 'PNG'
-bakerproperties.TileMode = 'SINGLE'
-bakerproperties.DirectBake = False
-bakerproperties.SamePathAsMesh = False
 mapcontainer.maps.clear()
 item_sub_1 = mapcontainer.maps.add()
 item_sub_1.name = ''

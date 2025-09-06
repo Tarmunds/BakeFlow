@@ -2,6 +2,7 @@
 from dataclasses import dataclass, field
 from typing import Callable, Dict, List, Optional
 from .MapProperties import *
+from .MapProperties import _MB_SYNC_GUARD
 
 # ===================== Update Functions =====================
 def _sync_res_y(self, context):
@@ -73,6 +74,17 @@ def _UpdateDepth(self, context):
 
         case _:
             pass
+    
+def _UpdateNormalOrientation(self, context):
+    if _MB_SYNC_GUARD["busy"]:
+        return
+    try:
+        _MB_SYNC_GUARD["busy"] = True
+        context.scene.MB_MT_NormalSettings.flip_y = (self.NormalOrientation == 'DIRECTX')
+    finally:
+        _MB_SYNC_GUARD["busy"] = False
+
+
 
 # ===================== Addon Preferences & Properties =====================
 
@@ -199,6 +211,16 @@ class MB_MT_Properties(bpy.types.PropertyGroup):
         update= _UpdateFormat
     )
     #-----------Texture-----------#
+    NormalOrientation: bpy.props.EnumProperty(
+        name="Normal Map Orientation",
+        description="Orientation of the normal map",
+        items=[
+            ('OPENGL', "OpenGL", "OpenGL normal map orientation"),
+            ('DIRECTX', "DirectX", "DirectX normal map orientation")
+        ],
+        default='OPENGL',
+        update= _UpdateNormalOrientation
+    )
 
 # ===================== Ui List =====================
 

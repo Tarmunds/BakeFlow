@@ -15,6 +15,10 @@ from importlib import import_module
 
 # List your submodules once, in the order you want them registered.
 _SUBMODULES = (
+    "UvHelper.Functions",
+    "UvHelper.Properties",
+    "UvHelper.Operators",
+    "UvHelper.Panels",
     "BakingSupply.Functions",
     "BakingSupply.Properties",
     "BakingSupply.Operators",

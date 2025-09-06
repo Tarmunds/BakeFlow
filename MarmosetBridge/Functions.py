@@ -100,19 +100,18 @@ def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
 
     if 'NORMAL' in enable_map_types:
         sb.section(f"""
-        for map in baker.getAllMaps():
-            if isinstance(map, mset.NormalBakerMap):  # Check class type instead of `type` attribute due to flip y issue
-                normal_map = map
-                break
-        #normal_map = baker.getMap("Normals")
+
+        normal_map = baker.getMap("Normals")
         normal_map.enabled = True
         normal_map.suffix = "{str(bpy.context.scene.MB_MT_NormalSettings.suffix)[1:]}"
                 
-        normal_map.flipX = {bpy.context.scene.MB_MT_NormalSettings.flip_x}
-        normal_map.flipY = True #{bpy.context.scene.MB_MT_NormalSettings.flip_y}
-        normal_map.flipZ = {bpy.context.scene.MB_MT_NormalSettings.flip_z}
+        #normal_map.flipX = {bpy.context.scene.MB_MT_NormalSettings.flip_x}
+        #normal_map.flipY = {bpy.context.scene.MB_MT_NormalSettings.flip_y}
+        #normal_map.flipZ = {bpy.context.scene.MB_MT_NormalSettings.flip_z}
         
-        print(dir(normal_map))
+        normal_map.flipZ = {bpy.context.scene.MB_MT_NormalSettings.flip_y} #swapping Y and Z to fix the normal flipping issue
+        
+        print("normal_map.flipY : ",normal_map.flipY)
         """) #bug of flipping normal due to error in the api, Request made on marmoset server
 
     
@@ -125,6 +124,7 @@ def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
         normal_obj_map.flipX = {bpy.context.scene.MB_MT_NormalOBJSettings.flip_x}
         normal_obj_map.flipY = {bpy.context.scene.MB_MT_NormalOBJSettings.flip_y}
         normal_obj_map.flipZ = {bpy.context.scene.MB_MT_NormalOBJSettings.flip_z}
+        
         """) #bug of flipping normal due to error in the api, Request made on marmoset server
     
     if 'HEIGHT' in enable_map_types:
@@ -151,8 +151,7 @@ def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
                 position_map.normalization = "Disabled"
         """)
             
-
-    
+   
     if 'CURVATURE' in enable_map_types:
         sb.section(f"""
         curvature_map = baker.getMap("Curvature")
@@ -214,10 +213,18 @@ def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
 def sec_material_sync(sb: ScriptBuilder, cfg: MarmoConfig):
     sb.section(f"""
     all_objects = mset.getAllObjects()
+    # Filter materials
     materials = [obj for obj in all_objects if isinstance(obj, mset.Material)]
+    # Find the material named "Default"
     default_material = next((mat for mat in materials if mat.name == "Default"), None)
-    if default_material:
-        default_material.setProperty("normalFlipY", {str(cfg.normal_flip_y)})
+    
+    if normal_map:
+        normal_map.flipY = {bpy.context.scene.MB_MT_NormalSettings.flip_y}
+        if default_material:
+            default_material.setProperty("normalFlipY", True)
+            print("Flip Y for normals enabled on Default material.")
+        else:
+            print("Default material not found.")
     """)
 
 def sec_finalize(sb: ScriptBuilder, cfg: MarmoConfig):

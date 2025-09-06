@@ -16,8 +16,8 @@ class MB_MT_Map_add(bpy.types.Operator):
     def execute(self, context):
         ui_container = context.scene.MB_MT_MapContainer
         new_item = ui_container.maps.add()
-        new_item.map_enable = True                              # <-- snake_case
-        new_item.map_type = next_unused_enum(ui_container)      # <-- snake_case
+        new_item.map_enable = True                              
+        new_item.map_type = next_unused_enum(ui_container)      
         ui_container.active_map_index = len(ui_container.maps) - 1
         return {'FINISHED'}
 
@@ -83,7 +83,6 @@ def _tileable(cfg: MarmoConfig):
     cfg.ignore_backfaces = True
     cfg.enable_thickness = False
     cfg.extra["dilate_pixels"] = 16
-
 
 # ===================== Export and Launch =====================
 
@@ -151,11 +150,15 @@ class MB_MT_ExportToMarmoset(bpy.types.Operator):
 
         # Choose bake output path
         if properties.SamePathAsMesh:
-            base_path = properties_bs.ExportPath
+            if properties_bs.ExportPath:
+                base_path = properties_bs.ExportPath.strip()
+            else :
+                base_path = os.path.dirname(bpy.data.filepath)
         else:
             ensure(bool(properties.BakingPath.strip()), "No custom path set for the Baking.")
             base_path = properties.BakingPath.strip()
 
+        
         export_path = os.path.join(base_path, f"{properties_bs.Name.strip()}.{properties.FileFormat.lower()}").replace("/", "\\")
 
         cfg = MarmoConfig(
@@ -200,8 +203,7 @@ class MB_MT_MapProperties_AddPreset(AddPresetBase, bpy.types.Operator):
     bl_label = 'Add preset'
     preset_menu = 'MB_MT_MapPanel_Presets'
 
-    preset_defines = [ 'bakerproperties = bpy.context.scene.MB_MT_Properties',
-                       'mapcontainer = bpy.context.scene.MB_MT_MapContainer',
+    preset_defines = [ 'mapcontainer = bpy.context.scene.MB_MT_MapContainer',
                        'normalsettings = bpy.context.scene.MB_MT_NormalSettings',
                        'normalobjsettings = bpy.context.scene.MB_MT_NormalOBJSettings',
                        'heightsettings = bpy.context.scene.MB_MT_HeightSettings',
@@ -212,15 +214,6 @@ class MB_MT_MapProperties_AddPreset(AddPresetBase, bpy.types.Operator):
                        'ao2settings = bpy.context.scene.MB_MT_AO2Settings',
                        ]
     preset_values = [
-        'bakerproperties.BakingPath',
-        'bakerproperties.ResolutionX',
-        'bakerproperties.ResolutionY',
-        'bakerproperties.PixelDepth',
-        'bakerproperties.Samples',
-        'bakerproperties.FileFormat',
-        'bakerproperties.TileMode',
-        'bakerproperties.DirectBake',
-        'bakerproperties.SamePathAsMesh',
         'mapcontainer.maps',
         'mapcontainer.active_map_index',
         'normalsettings.suffix',

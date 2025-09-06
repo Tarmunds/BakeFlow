@@ -1,9 +1,29 @@
 ﻿import bpy
 
+_MB_SYNC_GUARD = {"busy": False}
+
+def _guarded(fn):
+    def wrapper(self, context):
+        if _MB_SYNC_GUARD["busy"]:
+            return
+        try:
+            _MB_SYNC_GUARD["busy"] = True
+            fn(self, context)
+        finally:
+            _MB_SYNC_GUARD["busy"] = False
+    return wrapper
+
+@_guarded
+def _update_flip_y(self, context):
+    # Example: mirror flip_y into a scene property for other tools
+    if self.flip_y:
+        context.scene.MB_MT_Properties.NormalOrientation = 'DIRECTX'
+    else:
+        context.scene.MB_MT_Properties.NormalOrientation = 'OPENGL'
 class MB_MT_NormalSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_normal")
     flip_x: bpy.props.BoolProperty(name="Flip X", default=False)
-    flip_y: bpy.props.BoolProperty(name="Flip Y", default=False)
+    flip_y: bpy.props.BoolProperty(name="Flip Y", default=False, update=_update_flip_y)
     flip_z: bpy.props.BoolProperty(name="Flip Z", default=False)
 
 
@@ -15,10 +35,15 @@ class MB_MT_NormalSettings(bpy.types.PropertyGroup):
         col = box.column(align=True)
         col.label(text="Flip Channels")
         flips = col.row(align=True)
-        flips.enabled = False #disable due to marmoset issue
-        flips.prop(self, "flip_x")
-        flips.prop(self, "flip_y")
-        flips.prop(self, "flip_z")
+        flips.enabled = True #disable due to marmoset issue
+        sub = flips.row()
+        sub.enabled = False #disable due to marmoset issue
+        sub.prop(self, "flip_x")
+        sub = flips.row()
+        sub.prop(self, "flip_y")
+        sub = flips.row()
+        sub.enabled = False #disable due to marmoset issue
+        sub.prop(self, "flip_z")
         row = box.row()
         row.alert = True
         row.label(text="Note: Normal map flipping might not work due to a bug in Marmoset Toolbag API.", icon='ERROR')
