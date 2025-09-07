@@ -2,7 +2,7 @@
 from .Functions import GoToLine
 
 
-class MB_UH_Panel(bpy.types.Panel):
+class BF_UH_Panel(bpy.types.Panel):
     bl_label = "UV Helper"
     bl_idname = "VIEW3D_BF_1_UH_Panel"
     bl_space_type = 'VIEW_3D'
@@ -13,21 +13,21 @@ class MB_UH_Panel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        properities = context.scene.MB_UH_Properties
+        properities = context.scene.BF_UH_Properties
 
         row = GoToLine(layout, align=False)
-        row.operator("object.mb_uh_edges_by_normal", text="Select Edges by Angle")
+        row.operator("object.bf_uh_edges_by_normal", text="Select Edges by Angle")
         row.prop(properities, "angle_threshold", text="Angle")
         row = GoToLine(layout, align=False)
-        row.operator("object.mb_uh_contour_select", text="Select Contour Edges")
+        row.operator("object.bf_uh_contour_select", text="Select Contour Edges")
         row = GoToLine(layout)
-        row.operator("object.mb_uh_seam_sharp_edges", text="Tag Seam and Sharp").tag = True
-        row.operator("object.mb_uh_seam_sharp_edges", text="Clear Seam and Sharp").tag = False
+        row.operator("object.bf_uh_seam_sharp_edges", text="Tag Seam and Sharp").tag = True
+        row.operator("object.bf_uh_seam_sharp_edges", text="Clear Seam and Sharp").tag = False
         row = GoToLine(layout, align=False)
-        row.operator("object.mb_uh_clear_split_normals", text="Clear Split Normals")
-        row.operator("object.mb_uh_add_modifier", text="Add Modifiers")
+        row.operator("object.bf_uh_clear_split_normals", text="Clear Split Normals")
+        row.operator("object.bf_uh_add_modifier", text="Add Modifiers")
         row = GoToLine(layout, align=False)
-        row.operator("object.mb_uh_ngon", text="Detect Ngons")
+        row.operator("object.bf_uh_ngon", text="Detect Ngons")
         row = GoToLine(layout)
         row.enabled = (context.mode == 'OBJECT')
         row.label(text="Range:")
@@ -40,7 +40,7 @@ class MB_UH_Panel(bpy.types.Panel):
         layout.label(text="")
         
 _classes = (
-    MB_UH_Panel,
+    BF_UH_Panel,
 )
 def register():
     for cls in _classes:

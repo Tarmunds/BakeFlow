@@ -8,41 +8,41 @@ from .Properties import MarmoConfig
 
 # ===================== Ui List Operators =====================
 
-class MB_MT_Map_add(bpy.types.Operator):
-    bl_idname = "ui_list.mb_mt_map_add"
+class BF_MT_Map_add(bpy.types.Operator):
+    bl_idname = "ui_list.bf_mt_map_add"
     bl_label = "Add Item"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        ui_container = context.scene.MB_MT_MapContainer
+        ui_container = context.scene.BF_MT_MapContainer
         new_item = ui_container.maps.add()
         new_item.map_enable = True                              
         new_item.map_type = next_unused_enum(ui_container)      
         ui_container.active_map_index = len(ui_container.maps) - 1
         return {'FINISHED'}
 
-class MB_MT_Map_remove(bpy.types.Operator):
-    bl_idname = "ui_list.mb_mt_map_remove"
+class BF_MT_Map_remove(bpy.types.Operator):
+    bl_idname = "ui_list.bf_mt_map_remove"
     bl_label = "Remove Item"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        ui_container = context.scene.MB_MT_MapContainer
-        index = context.scene.MB_MT_MapContainer.active_map_index
+        ui_container = context.scene.BF_MT_MapContainer
+        index = context.scene.BF_MT_MapContainer.active_map_index
         if ui_container.maps:
             ui_container.maps.remove(index)
             if ui_container.active_map_index >= len(ui_container.maps):
                 ui_container.active_map_index = min(max(0, index - 1), len(ui_container.maps) - 1)
         return {'FINISHED'}
 
-class MB_MT_Map_move(bpy.types.Operator):
-    bl_idname = "ui_list.mb_mt_map_move"
+class BF_MT_Map_move(bpy.types.Operator):
+    bl_idname = "ui_list.bf_mt_map_move"
     bl_label = "Move Item"
     direction: bpy.props.EnumProperty(items=(('UP', 'Up', ""), ('DOWN', 'Down', "")))
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
-        ui_container = context.scene.MB_MT_MapContainer
+        ui_container = context.scene.BF_MT_MapContainer
         index = ui_container.active_map_index
         if self.direction == 'UP' and index > 0:
             ui_container.maps.move(index, index - 1)
@@ -116,8 +116,8 @@ class Launcher:
 
 # ===================== Blender Operator =====================
 
-class MB_MT_ExportToMarmoset(bpy.types.Operator):
-    bl_idname = "object.mb_mt_export_to_marmoset"
+class BF_MT_ExportToMarmoset(bpy.types.Operator):
+    bl_idname = "object.bf_mt_export_to_marmoset"
     bl_label = "Export and Launch Marmoset"
 
     # Optional: let user pick a preset by name via Operator property
@@ -133,11 +133,11 @@ class MB_MT_ExportToMarmoset(bpy.types.Operator):
         ensure(marmoset_path and os.path.exists(marmoset_path),
                f"Marmoset Toolbag not found at: {marmoset_path}. Set the correct path in Preferences.")
 
-        ensure(bool(context.scene.MB_BS_Properties.Name.strip()), "Appellation cannot be empty. Please provide a name.")
+        ensure(bool(context.scene.BF_BS_Properties.Name.strip()), "Appellation cannot be empty. Please provide a name.")
 
         #ref to Properties
-        properties = scene.MB_MT_Properties
-        properties_bs = scene.MB_BS_Properties
+        properties = scene.BF_MT_Properties
+        properties_bs = scene.BF_BS_Properties
 
         # Pick the mesh path base
         meshes_folder = properties_bs.ExportPath.strip() if properties_bs.ExportPath.strip() else os.path.dirname(bpy.data.filepath)
@@ -198,20 +198,20 @@ class MB_MT_ExportToMarmoset(bpy.types.Operator):
 
 # ===================== Preset Operator =====================
 
-class MB_MT_MapProperties_AddPreset(AddPresetBase, bpy.types.Operator):
+class BF_MT_MapProperties_AddPreset(AddPresetBase, bpy.types.Operator):
     bl_idname = 'mbmt.mapproperties_addpreset'
     bl_label = 'Add preset'
-    preset_menu = 'MB_MT_MapPanel_Presets'
+    preset_menu = 'BF_MT_MapPanel_Presets'
 
-    preset_defines = [ 'mapcontainer = bpy.context.scene.MB_MT_MapContainer',
-                       'normalsettings = bpy.context.scene.MB_MT_NormalSettings',
-                       'normalobjsettings = bpy.context.scene.MB_MT_NormalOBJSettings',
-                       'heightsettings = bpy.context.scene.MB_MT_HeightSettings',
-                       'positionsettings = bpy.context.scene.MB_MT_PositionSettings',
-                       'curvesettings = bpy.context.scene.MB_MT_CurveSettings',
-                       'thicknesssettings = bpy.context.scene.MB_MT_ThicknessSettings',
-                       'aosettings = bpy.context.scene.MB_MT_AOSettings',
-                       'ao2settings = bpy.context.scene.MB_MT_AO2Settings',
+    preset_defines = [ 'mapcontainer = bpy.context.scene.BF_MT_MapContainer',
+                       'normalsettings = bpy.context.scene.BF_MT_NormalSettings',
+                       'normalobjsettings = bpy.context.scene.BF_MT_NormalOBJSettings',
+                       'heightsettings = bpy.context.scene.BF_MT_HeightSettings',
+                       'positionsettings = bpy.context.scene.BF_MT_PositionSettings',
+                       'curvesettings = bpy.context.scene.BF_MT_CurveSettings',
+                       'thicknesssettings = bpy.context.scene.BF_MT_ThicknessSettings',
+                       'aosettings = bpy.context.scene.BF_MT_AOSettings',
+                       'ao2settings = bpy.context.scene.BF_MT_AO2Settings',
                        ]
     preset_values = [
         'mapcontainer.maps',
@@ -258,11 +258,11 @@ class MB_MT_MapProperties_AddPreset(AddPresetBase, bpy.types.Operator):
     preset_subdir = 'MapPresets'
     
 _classes = (
-    MB_MT_ExportToMarmoset,
-    MB_MT_Map_add,
-    MB_MT_Map_remove,
-    MB_MT_Map_move,
-    MB_MT_MapProperties_AddPreset,
+    BF_MT_Map_add,
+    BF_MT_Map_remove,
+    BF_MT_Map_move,
+    BF_MT_ExportToMarmoset,
+    BF_MT_MapProperties_AddPreset,
 )
 
 def register():

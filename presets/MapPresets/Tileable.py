@@ -1,14 +1,14 @@
 import bpy
 
-mapcontainer = bpy.context.scene.MB_MT_MapContainer
-normalsettings = bpy.context.scene.MB_MT_NormalSettings
-normalobjsettings = bpy.context.scene.MB_MT_NormalOBJSettings
-heightsettings = bpy.context.scene.MB_MT_HeightSettings
-positionsettings = bpy.context.scene.MB_MT_PositionSettings
-curvesettings = bpy.context.scene.MB_MT_CurveSettings
-thicknesssettings = bpy.context.scene.MB_MT_ThicknessSettings
-aosettings = bpy.context.scene.MB_MT_AOSettings
-ao2settings = bpy.context.scene.MB_MT_AO2Settings
+mapcontainer = bpy.context.scene.BF_MT_MapContainer
+normalsettings = bpy.context.scene.BF_MT_NormalSettings
+normalobjsettings = bpy.context.scene.BF_MT_NormalOBJSettings
+heightsettings = bpy.context.scene.BF_MT_HeightSettings
+positionsettings = bpy.context.scene.BF_MT_PositionSettings
+curvesettings = bpy.context.scene.BF_MT_CurveSettings
+thicknesssettings = bpy.context.scene.BF_MT_ThicknessSettings
+aosettings = bpy.context.scene.BF_MT_AOSettings
+ao2settings = bpy.context.scene.BF_MT_AO2Settings
 
 mapcontainer.maps.clear()
 item_sub_1 = mapcontainer.maps.add()

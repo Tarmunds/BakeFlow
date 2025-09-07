@@ -80,7 +80,7 @@ def _UpdateNormalOrientation(self, context):
         return
     try:
         _MB_SYNC_GUARD["busy"] = True
-        context.scene.MB_MT_NormalSettings.flip_y = (self.NormalOrientation == 'DIRECTX')
+        context.scene.BF_MT_NormalSettings.flip_y = (self.NormalOrientation == 'DIRECTX')
     finally:
         _MB_SYNC_GUARD["busy"] = False
 
@@ -89,7 +89,7 @@ def _UpdateNormalOrientation(self, context):
 # ===================== Addon Preferences & Properties =====================
 
 ADDON_KEY = (__package__ or __name__).split(".")[0]
-class MB_MT_Preferences(bpy.types.AddonPreferences):
+class BF_MT_Preferences(bpy.types.AddonPreferences):
     bl_idname = ADDON_KEY
 
     marmoset_path: bpy.props.StringProperty(
@@ -109,7 +109,7 @@ class MB_MT_Preferences(bpy.types.AddonPreferences):
         layout.label(text="Marmoset Toolbag Bridge Preferences")
         layout.prop(self, "marmoset_path")
 
-class MB_MT_Properties(bpy.types.PropertyGroup):
+class BF_MT_Properties(bpy.types.PropertyGroup):
     #-----------Exporter-----------#
     DirectBake: bpy.props.BoolProperty(
         name="Direct Bake",
@@ -243,7 +243,7 @@ Map_Types = [
     ('MATERIAL_ID', 'Material ID', 'Material ID Map'),
 ]
 
-class MB_MT_MapItem(bpy.types.PropertyGroup):
+class BF_MT_MapItem(bpy.types.PropertyGroup):
     map_enable: bpy.props.BoolProperty(
         name="Enable",
         description="Enable or disable this map for baking",
@@ -257,13 +257,13 @@ class MB_MT_MapItem(bpy.types.PropertyGroup):
     )
             
 
-class MB_MT_MapContainer(bpy.types.PropertyGroup):
-    maps: bpy.props.CollectionProperty(type=MB_MT_MapItem)
+class BF_MT_MapContainer(bpy.types.PropertyGroup):
+    maps: bpy.props.CollectionProperty(type=BF_MT_MapItem)
     active_map_index: bpy.props.IntProperty(name="Active Index", default=0)
     
-class MB_MT_MapList(bpy.types.UIList):
+class BF_MT_MapList(bpy.types.UIList):
     """UIList to display and manage baking maps"""
-    bl_idname = "MB_MT_map_list"
+    bl_idname = "BF_MT_map_list"
 
     def draw_item(self, context, layout, data, item, icon, active_data, active_propname, index):
         map_item = item
@@ -318,23 +318,23 @@ class MarmoConfig:
 
 
 _classes = (
-    MB_MT_Properties,
-    MB_MT_Preferences,
-    MB_MT_MapItem,
-    MB_MT_MapContainer,
-    MB_MT_MapList,
+    BF_MT_Properties,
+    BF_MT_Preferences,
+    BF_MT_MapItem,
+    BF_MT_MapContainer,
+    BF_MT_MapList,
 )
 
 def register():
     for cls in _classes:
         bpy.utils.register_class(cls)
-    bpy.types.Scene.MB_MT_Properties = bpy.props.PointerProperty(type=MB_MT_Properties)
-    bpy.types.Scene.MB_MT_MapContainer = bpy.props.PointerProperty(type=MB_MT_MapContainer)
+    bpy.types.Scene.BF_MT_Properties = bpy.props.PointerProperty(type=BF_MT_Properties)
+    bpy.types.Scene.BF_MT_MapContainer = bpy.props.PointerProperty(type=BF_MT_MapContainer)
 
 
 
 def unregister():
-    del bpy.types.Scene.MB_MT_MapContainer
-    del bpy.types.Scene.MB_MT_Properties
+    del bpy.types.Scene.BF_MT_MapContainer
+    del bpy.types.Scene.BF_MT_Properties
     for cls in reversed(_classes):
         bpy.utils.unregister_class(cls)

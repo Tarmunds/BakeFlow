@@ -1,5 +1,5 @@
 ﻿import bpy
-class MB_BS_Properties(bpy.types.PropertyGroup):
+class BF_BS_Properties(bpy.types.PropertyGroup):
     ExportPath: bpy.props.StringProperty(
         name="Export Path",
         description="Path to export the selected objects",
@@ -17,14 +17,14 @@ class MB_BS_Properties(bpy.types.PropertyGroup):
         default=False
     )
     
-_classes = (MB_BS_Properties,)
+_classes = (BF_BS_Properties,)
 
 def register():
     for cls in _classes:
         bpy.utils.register_class(cls)
-    bpy.types.Scene.MB_BS_Properties = bpy.props.PointerProperty(type=MB_BS_Properties)
+    bpy.types.Scene.BF_BS_Properties = bpy.props.PointerProperty(type=BF_BS_Properties)
 
 def unregister():
-    del bpy.types.Scene.MB_BS_Properties
+    del bpy.types.Scene.BF_BS_Properties
     for cls in reversed(_classes):
         bpy.utils.unregister_class(cls)

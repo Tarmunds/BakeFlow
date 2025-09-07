@@ -13,7 +13,7 @@ def popup_message(context, message):
     context.window_manager.popup_menu(draw, title="Info", icon='INFO')
 
 def select_edges_by_normal_difference(self, context):
-    properties = context.scene.MB_UH_Properties
+    properties = context.scene.BF_UH_Properties
     bpy.ops.mesh.select_all(action='DESELECT')
 
     total_selected_edges = 0
@@ -82,7 +82,7 @@ def add_modifier(context):
     popup_message(context, f"Added Triangulate, Weighted Normal, and enabled smooth shading for {len(selected_objects)} objects.")
 
 def ngon_detector(self, context):
-    properties = context.scene.MB_UH_Properties
+    properties = context.scene.BF_UH_Properties
     meshes_to_switch_to_edit = []  # will hold meshes with ngons
     ngon_count = 0
     range_option = properties.ngon_detect_range

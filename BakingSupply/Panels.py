@@ -1,7 +1,7 @@
 ﻿import bpy
 from .Functions import GoToLine
 
-class MB_BS_Panel(bpy.types.Panel):
+class BF_BS_Panel(bpy.types.Panel):
     """Panel for the low and high mesh operations"""
     bl_label = "Baking Supply"
     bl_idname = "VIEW3D_PT_BF_2_BS_Panel"
@@ -11,24 +11,24 @@ class MB_BS_Panel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        properities = context.scene.MB_BS_Properties
+        properities = context.scene.BF_BS_Properties
 
         #Hide/Show Buttons
         row = GoToLine(layout)
-        row.operator("object.mb_bs_hide_high_meshes", text="Hide High")
-        row.operator("object.mb_bs_hide_low_meshes", text="Hide Low")
+        row.operator("object.bf_bs_hide_high_meshes", text="Hide High")
+        row.operator("object.bf_bs_hide_low_meshes", text="Hide Low")
         row = GoToLine(layout)
-        row.operator("object.mb_bs_show_high_meshes", text="Show High")
-        row.operator("object.mb_bs_show_low_meshes", text="Show Low")
+        row.operator("object.bf_bs_show_high_meshes", text="Show High")
+        row.operator("object.bf_bs_show_low_meshes", text="Show Low")
         #Suffix Buttons
         layout.separator()
         col = layout.column(align=True)
         row = col.row(align=True)
         row.scale_y = 1.2
-        row.operator("object.mb_bs_add_suffix", text="Add _high").rename_type = "high"
-        row.operator("object.mb_bs_add_suffix", text="Add _low").rename_type = "low"
-        col.operator("object.mb_bs_switch_suffix", text="High <> Low")
-        col.operator("object.mb_bs_transfer_name_suffix", text="Transfer Name")
+        row.operator("object.bf_bs_add_suffix", text="Add _high").rename_type = "high"
+        row.operator("object.bf_bs_add_suffix", text="Add _low").rename_type = "low"
+        col.operator("object.bf_bs_switch_suffix", text="High <> Low")
+        col.operator("object.bf_bs_transfer_name_suffix", text="Transfer Name")
         #Export Buttons
         layout.separator()
         row = GoToLine(layout)
@@ -61,9 +61,9 @@ class MB_BS_Panel(bpy.types.Panel):
         
         
 def register():
-    bpy.utils.register_class(MB_BS_Panel)
+    bpy.utils.register_class(BF_BS_Panel)
     
 def unregister():
-    bpy.utils.unregister_class(MB_BS_Panel)
+    bpy.utils.unregister_class(BF_BS_Panel)
 
        

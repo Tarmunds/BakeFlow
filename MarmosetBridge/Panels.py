@@ -1,23 +1,23 @@
 ﻿import bpy, os
-from .Properties import MB_MT_MapItem
+from .Properties import BF_MT_MapItem
 from bl_ui.utils import PresetPanel
 from .Functions import GoToLine
-from .Operators import MB_MT_MapProperties_AddPreset
-from .MapProperties import MAP_TYPE_TO_SETTINGS, MB_MT_NoSettings
+from .Operators import BF_MT_MapProperties_AddPreset
+from .MapProperties import MAP_TYPE_TO_SETTINGS, BF_MT_NoSettings
 from pathlib import Path
-#from .Presets import MB_MT_DataBaker_PresetHeader
+
 
 ADDON_ROOT = Path(__file__).resolve().parent.parent
 # packaged presets live at: <addon_root>/presets/MapPresets
 PKG_DIR = ADDON_ROOT / "presets" / "MapPresets"
 
-class MB_MT_MapPanel_Presets(bpy.types.Menu):
+class BF_MT_MapPanel_Presets(bpy.types.Menu):
     bl_label = 'Map Presets'
     preset_subdir = 'MapPresets'
     preset_operator = 'script.execute_preset'
     draw = bpy.types.Menu.draw_preset
 
-class MB_MT_Panel(bpy.types.Panel):
+class BF_MT_Panel(bpy.types.Panel):
     """Panel for the low and high mesh operations"""
     bl_label = "Marmoset Toolbag Bridge"
     bl_idname = "VIEW3D_PT_BF_3_MT_Panel"
@@ -28,11 +28,11 @@ class MB_MT_Panel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        properties = context.scene.MB_MT_Properties
+        properties = context.scene.BF_MT_Properties
         
         row = layout.row()
         row.scale_y = 2
-        row.operator("object.mb_mt_export_to_marmoset", text="Export & Launch Marmoset", icon='MONKEY')
+        row.operator("object.bf_mt_export_to_marmoset", text="Export & Launch Marmoset", icon='MONKEY')
         layout.separator()
 
         row = GoToLine(layout, align=False)
@@ -67,7 +67,7 @@ class MB_MT_Panel(bpy.types.Panel):
         layout.label(icon='MONKEY')
         layout.label(text="")
 
-class  MB_MT_MapsPanel(bpy.types.Panel):
+class  BF_MT_MapsPanel(bpy.types.Panel):
     """Panel for the low and high mesh operations"""
     bl_label = "Marmoset Toolbag Bridge - Maps"
     bl_idname = "VIEW3D_PT_BF_4_MT_MapsPanel"
@@ -78,8 +78,8 @@ class  MB_MT_MapsPanel(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
         scene = context.scene
-        map_container = context.scene.MB_MT_MapContainer
-        properties = context.scene.MB_MT_Properties
+        map_container = context.scene.BF_MT_MapContainer
+        properties = context.scene.BF_MT_Properties
         send_map = properties.SendMapSettings
         
         row = GoToLine(layout, align=False)
@@ -88,31 +88,31 @@ class  MB_MT_MapsPanel(bpy.types.Panel):
         
         row = GoToLine(layout, align=False)
         row.enabled = send_map
-        row.menu("MB_MT_MapPanel_Presets", text="Map Presets", icon="PRESET")
+        row.menu("BF_MT_MapPanel_Presets", text="Map Presets", icon="PRESET")
 
-        row.operator(MB_MT_MapProperties_AddPreset.bl_idname, text="", icon='ADD')
-        row.operator(MB_MT_MapProperties_AddPreset.bl_idname, text="", icon='REMOVE').remove_active = True
+        row.operator(BF_MT_MapProperties_AddPreset.bl_idname, text="", icon='ADD')
+        row.operator(BF_MT_MapProperties_AddPreset.bl_idname, text="", icon='REMOVE').remove_active = True
         
 
 
         # List UI
         row = layout.row()
         row.enabled = send_map
-        row.template_list("MB_MT_map_list", "", map_container, "maps", map_container, "active_map_index", rows=5)
+        row.template_list("BF_MT_map_list", "", map_container, "maps", map_container, "active_map_index", rows=5)
         # Operators
         col = row.column(align=True)
-        col.operator("ui_list.mb_mt_map_add", icon='ADD', text="")
-        col.operator("ui_list.mb_mt_map_remove", icon='REMOVE', text="")
+        col.operator("ui_list.bf_mt_map_add", icon='ADD', text="")
+        col.operator("ui_list.bf_mt_map_remove", icon='REMOVE', text="")
         col.separator()
-        col.operator("ui_list.mb_mt_map_move", icon='TRIA_UP', text="").direction = 'UP'
-        col.operator("ui_list.mb_mt_map_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
+        col.operator("ui_list.bf_mt_map_move", icon='TRIA_UP', text="").direction = 'UP'
+        col.operator("ui_list.bf_mt_map_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
 
         # --- Active map settings block under the list ---
         if map_container.maps and 0 <= map_container.active_map_index < len(map_container.maps) and send_map:
             item = map_container.maps[map_container.active_map_index]
 
             # Resolve settings class from map_type
-            settings_cls = MAP_TYPE_TO_SETTINGS.get(item.map_type, MB_MT_NoSettings)
+            settings_cls = MAP_TYPE_TO_SETTINGS.get(item.map_type, BF_MT_NoSettings)
 
             # Scene stores a PointerProperty per settings class with the same name as the class
             settings_attr_name = settings_cls.__name__
@@ -150,9 +150,9 @@ def _sync_presets():
 
 
 _classes = (
-    MB_MT_MapPanel_Presets,
-    MB_MT_Panel,
-    MB_MT_MapsPanel,
+    BF_MT_MapPanel_Presets,
+    BF_MT_Panel,
+    BF_MT_MapsPanel,
 )
 def register():
     for cls in _classes:

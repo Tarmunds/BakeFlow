@@ -4,8 +4,8 @@
 #-----------Naming Operators-----------#
 
 # Operator to replace "_high" with "_low" and vice versa
-class MB_BS_SwitchSuffix(bpy.types.Operator):
-    bl_idname = "object.mb_bs_switch_suffix"
+class BF_BS_SwitchSuffix(bpy.types.Operator):
+    bl_idname = "object.bf_bs_switch_suffix"
     bl_label = "High <> Low"
 
     def execute(self, context):
@@ -21,8 +21,8 @@ class MB_BS_SwitchSuffix(bpy.types.Operator):
         return {'FINISHED'}
 
 # Operator to add "_high" or "_low" to object names, preventing duplicate suffixes
-class MB_BS_AddSuffix(bpy.types.Operator):
-    bl_idname = "object.mb_bs_add_suffix"
+class BF_BS_AddSuffix(bpy.types.Operator):
+    bl_idname = "object.bf_bs_add_suffix"
     bl_label = "Add Suffix"
 
     rename_type: bpy.props.StringProperty(name="Rename Type")
@@ -37,8 +37,8 @@ class MB_BS_AddSuffix(bpy.types.Operator):
         return {'FINISHED'}
 
 # Operator to transfer names between _high and _low meshes with indexing
-class MB_BS_TransferName(bpy.types.Operator):
-    bl_idname = "object.mb_bs_transfer_name_suffix"
+class BF_BS_TransferName(bpy.types.Operator):
+    bl_idname = "object.bf_bs_transfer_name_suffix"
     bl_label = "Transfer Name"
 
     def execute(self, context):
@@ -79,9 +79,9 @@ class MB_BS_TransferName(bpy.types.Operator):
 #-----------Visibility Operators-----------#
 
 #show low
-class MB_BS_ShowLow(bpy.types.Operator):
+class BF_BS_ShowLow(bpy.types.Operator):
     """Operator to show or hide meshes with '_low' in their name"""
-    bl_idname = "object.mb_bs_show_low_meshes"
+    bl_idname = "object.bf_bs_show_low_meshes"
     bl_label = "Show Low"
 
     def execute(self, context):
@@ -92,9 +92,9 @@ class MB_BS_ShowLow(bpy.types.Operator):
 
 
 #Hide low
-class MB_BS_HideLow(bpy.types.Operator):
+class BF_BS_HideLow(bpy.types.Operator):
     """Operator to hide meshes with '_low' in their name"""
-    bl_idname = "object.mb_bs_hide_low_meshes"
+    bl_idname = "object.bf_bs_hide_low_meshes"
     bl_label = "Hide Low"
 
     def execute(self, context):
@@ -105,9 +105,9 @@ class MB_BS_HideLow(bpy.types.Operator):
 
 
 #show High
-class MB_BS_ShowHigh(bpy.types.Operator):
+class BF_BS_ShowHigh(bpy.types.Operator):
     """Operator to show or hide meshes with '_high' in their name"""
-    bl_idname = "object.mb_bs_show_high_meshes"
+    bl_idname = "object.bf_bs_show_high_meshes"
     bl_label = "Show High"
 
     def execute(self, context):
@@ -118,9 +118,9 @@ class MB_BS_ShowHigh(bpy.types.Operator):
 
 
 #Hide high
-class MB_BS_HideHigh(bpy.types.Operator):
+class BF_BS_HideHigh(bpy.types.Operator):
     """Operator to hide meshes with '_high' in their name"""
-    bl_idname = "object.mb_bs_hide_high_meshes"
+    bl_idname = "object.bf_bs_hide_high_meshes"
     bl_label = "Hide High"
 
     def execute(self, context):
@@ -131,7 +131,7 @@ class MB_BS_HideHigh(bpy.types.Operator):
     
 #-----------Exporter-----------#
 
-class MB_BS_Export(bpy.types.Operator):
+class BF_BS_Export(bpy.types.Operator):
     bl_idname = "object.export_selected_operator"
     bl_label = "Export Selected To Files"
     
@@ -187,14 +187,14 @@ class MB_BS_Export(bpy.types.Operator):
 #-----------Register-----------#
 
 _classes = (
-    MB_BS_SwitchSuffix,
-    MB_BS_AddSuffix,
-    MB_BS_TransferName,
-    MB_BS_ShowLow,
-    MB_BS_HideLow,
-    MB_BS_ShowHigh,
-    MB_BS_HideHigh,
-    MB_BS_Export,
+    BF_BS_SwitchSuffix,
+    BF_BS_AddSuffix,
+    BF_BS_TransferName,
+    BF_BS_ShowLow,
+    BF_BS_HideLow,
+    BF_BS_ShowHigh,
+    BF_BS_HideHigh,
+    BF_BS_Export,
 )
 
 def register():

@@ -1,19 +1,17 @@
-﻿# marmoset_bridge/__init__.py
+﻿import importlib
+from importlib import import_module
+
 bl_info = {
     "name": "BakeFlow",
     "author": "Tarmunds",
     "version": (0, 9, 0),
-    "blender": (4, 5, 0),
+    "blender": (4, 2, 0),
     "location": "View3D > Tarmunds Addons > Marmoset Bridge",
     "description": "Tool",
     "tracker_url": "https://discord.gg/h39W5s5ZbQ",
     "category": "Import-Export",
 }
-
-import importlib
-from importlib import import_module
-
-# List your submodules once, in the order you want them registered.
+  
 _SUBMODULES = (
     "UvHelper.Functions",
     "UvHelper.Properties",
@@ -31,7 +29,7 @@ _SUBMODULES = (
     
 )
 
-# Import them relative to this package name
+
 _modules = tuple(import_module(f".{name}", __name__) for name in _SUBMODULES)
 
 for m in _modules:

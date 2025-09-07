@@ -17,10 +17,10 @@ def _guarded(fn):
 def _update_flip_y(self, context):
     # Example: mirror flip_y into a scene property for other tools
     if self.flip_y:
-        context.scene.MB_MT_Properties.NormalOrientation = 'DIRECTX'
+        context.scene.BF_MT_Properties.NormalOrientation = 'DIRECTX'
     else:
-        context.scene.MB_MT_Properties.NormalOrientation = 'OPENGL'
-class MB_MT_NormalSettings(bpy.types.PropertyGroup):
+        context.scene.BF_MT_Properties.NormalOrientation = 'OPENGL'
+class BF_MT_NormalSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_normal")
     flip_x: bpy.props.BoolProperty(name="Flip X", default=False)
     flip_y: bpy.props.BoolProperty(name="Flip Y", default=False, update=_update_flip_y)
@@ -51,7 +51,7 @@ class MB_MT_NormalSettings(bpy.types.PropertyGroup):
         row.alert = True
         row.label(text="Request has been made to Marmoset support to fix this issue.")
 
-class MB_MT_NormalOBJSettings(bpy.types.PropertyGroup):
+class BF_MT_NormalOBJSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_normalobj")
     flip_x: bpy.props.BoolProperty(name="Flip X", default=False)
     flip_y: bpy.props.BoolProperty(name="Flip Y", default=False)
@@ -70,7 +70,7 @@ class MB_MT_NormalOBJSettings(bpy.types.PropertyGroup):
         flips.prop(self, "flip_y")
         flips.prop(self, "flip_z")
 
-class MB_MT_HeightSettings(bpy.types.PropertyGroup):
+class BF_MT_HeightSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_height")
     inner_distance: bpy.props.FloatProperty(name="Inner Distance", default=-0.5, min=-100.0, max=100.0)
     outer_distance: bpy.props.FloatProperty(name="Outer Distance", default=0.5, min=-100.0, max=100.0)
@@ -84,7 +84,7 @@ class MB_MT_HeightSettings(bpy.types.PropertyGroup):
         col.prop(self, "inner_distance")
         col.prop(self, "outer_distance")
 
-class MB_MT_PositionSettings(bpy.types.PropertyGroup):
+class BF_MT_PositionSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_position")
     normalization: bpy.props.EnumProperty(
         name="Normalization",
@@ -104,7 +104,7 @@ class MB_MT_PositionSettings(bpy.types.PropertyGroup):
         col = box.column(align=True)
         col.prop(self, "normalization")
 
-class MB_MT_CurveSettings(bpy.types.PropertyGroup):
+class BF_MT_CurveSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_curve")
     strength: bpy.props.FloatProperty(name="Strength", default=1.0, min=0.0, max=4.0)
 
@@ -116,7 +116,7 @@ class MB_MT_CurveSettings(bpy.types.PropertyGroup):
         col = box.column(align=True)
         col.prop(self, "strength")
 
-class MB_MT_ThicknessSettings(bpy.types.PropertyGroup):
+class BF_MT_ThicknessSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_thickness")
     ray_count: bpy.props.IntProperty(name="RayCount", default=256, min=32, max=4096)
     search_distance: bpy.props.FloatProperty(name="Search Distance", default=0.0, min=0.0, max=100.0)
@@ -148,7 +148,7 @@ class MB_MT_ThicknessSettings(bpy.types.PropertyGroup):
         row.alert = True
         row.label(text="Request has been made to Marmoset support to fix this issue.")
 
-class MB_MT_AOSettings(bpy.types.PropertyGroup):
+class BF_MT_AOSettings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_ao")
     ray_count: bpy.props.IntProperty(name="Ray Count", default=512, min=32, soft_max=4096)
     search_distance: bpy.props.FloatProperty(name="Search Distance", default=0.0, min=0.0, soft_max=100.0)
@@ -177,7 +177,7 @@ class MB_MT_AOSettings(bpy.types.PropertyGroup):
         row.prop(self, "two_sided")
 
 
-class MB_MT_AO2Settings(bpy.types.PropertyGroup):
+class BF_MT_AO2Settings(bpy.types.PropertyGroup):
     suffix: bpy.props.StringProperty(name="Suffix", default="_ao2")
     ray_count: bpy.props.IntProperty(name="Ray Count", default=512, min=32, soft_max=4096)
     search_distance: bpy.props.FloatProperty(name="Search Distance", default=0.0, min=0.0, soft_max=100.0)
@@ -205,48 +205,34 @@ class MB_MT_AO2Settings(bpy.types.PropertyGroup):
         row.prop(self, "ignore_groups")
         row.prop(self, "two_sided")
 
-class MB_MT_NoSettings(bpy.types.PropertyGroup):
+class BF_MT_NoSettings(bpy.types.PropertyGroup):
     def draw(self, layout):
         box = layout.box()
         box.label(text="No Settings Available")
 
 MAP_TYPE_TO_SETTINGS = {
-    'NORMAL': MB_MT_NormalSettings,
-    'NORMAL_OBJ': MB_MT_NormalOBJSettings,
-    'HEIGHT': MB_MT_HeightSettings,
-    'POSITION': MB_MT_PositionSettings,
-    'CURVATURE': MB_MT_CurveSettings,
-    'THICKNESS': MB_MT_ThicknessSettings,
-    'AMBIANT_OCCLUSION': MB_MT_AOSettings,
-    'AMBIANT_OCCLUSION_2': MB_MT_AO2Settings,
+    'NORMAL': BF_MT_NormalSettings,
+    'NORMAL_OBJ': BF_MT_NormalOBJSettings,
+    'HEIGHT': BF_MT_HeightSettings,
+    'POSITION': BF_MT_PositionSettings,
+    'CURVATURE': BF_MT_CurveSettings,
+    'THICKNESS': BF_MT_ThicknessSettings,
+    'AMBIANT_OCCLUSION': BF_MT_AOSettings,
+    'AMBIANT_OCCLUSION_2': BF_MT_AO2Settings,
 
 }
 
 _classes = (
-    MB_MT_NormalSettings,
-    MB_MT_NormalOBJSettings,
-    MB_MT_HeightSettings,
-    MB_MT_PositionSettings,
-    MB_MT_CurveSettings,
-    MB_MT_ThicknessSettings,
-    MB_MT_AOSettings,
-    MB_MT_AO2Settings,
-    MB_MT_NoSettings,
+    BF_MT_NormalSettings,
+    BF_MT_NormalOBJSettings,
+    BF_MT_HeightSettings,
+    BF_MT_PositionSettings,
+    BF_MT_CurveSettings,
+    BF_MT_ThicknessSettings,
+    BF_MT_AOSettings,
+    BF_MT_AO2Settings,
+    BF_MT_NoSettings,
 )
-
-_MapsSettings = (
-    MB_MT_NormalSettings,
-    MB_MT_NormalOBJSettings,
-    MB_MT_HeightSettings,
-    MB_MT_PositionSettings,
-    MB_MT_CurveSettings,
-    MB_MT_ThicknessSettings,
-    MB_MT_AOSettings,
-    MB_MT_AO2Settings,
-    MB_MT_NoSettings,
-)
-
-
 
 def register():
     for cls in _classes:
@@ -262,7 +248,7 @@ def register():
             )
 
 def unregister():
-    for ms in _MapsSettings:
+    for ms in _classes:
         prop_name = ms.__name__
         if hasattr(bpy.types.Scene, prop_name):
             delattr(bpy.types.Scene, prop_name)

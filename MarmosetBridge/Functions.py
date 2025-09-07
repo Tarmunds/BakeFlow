@@ -87,8 +87,8 @@ def sec_core_params(sb: ScriptBuilder, cfg: MarmoConfig):
 
 
 def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
-    properties = bpy.context.scene.MB_MT_Properties #get the properties from the context
-    map_container = bpy.context.scene.MB_MT_MapContainer
+    properties = bpy.context.scene.BF_MT_Properties #get the properties from the context
+    map_container = bpy.context.scene.BF_MT_MapContainer
     enable_map_types = [item.map_type for item in map_container.maps if item.map_enable]
     
     sb.section("""
@@ -103,13 +103,13 @@ def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
 
         normal_map = baker.getMap("Normals")
         normal_map.enabled = True
-        normal_map.suffix = "{str(bpy.context.scene.MB_MT_NormalSettings.suffix)[1:]}"
+        normal_map.suffix = "{str(bpy.context.scene.BF_MT_NormalSettings.suffix)[1:]}"
                 
-        #normal_map.flipX = {bpy.context.scene.MB_MT_NormalSettings.flip_x}
-        #normal_map.flipY = {bpy.context.scene.MB_MT_NormalSettings.flip_y}
-        #normal_map.flipZ = {bpy.context.scene.MB_MT_NormalSettings.flip_z}
+        #normal_map.flipX = {bpy.context.scene.BF_MT_NormalSettings.flip_x}
+        #normal_map.flipY = {bpy.context.scene.BF_MT_NormalSettings.flip_y}
+        #normal_map.flipZ = {bpy.context.scene.BF_MT_NormalSettings.flip_z}
         
-        normal_map.flipZ = {bpy.context.scene.MB_MT_NormalSettings.flip_y} #swapping Y and Z to fix the normal flipping issue
+        normal_map.flipZ = {bpy.context.scene.BF_MT_NormalSettings.flip_y} #swapping Y and Z to fix the normal flipping issue
         
         print("normal_map.flipY : ",normal_map.flipY)
         """) #bug of flipping normal due to error in the api, Request made on marmoset server
@@ -119,11 +119,11 @@ def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
         sb.section(f"""
         normal_obj_map = baker.getMap("Normals (Object)")
         normal_obj_map.enabled = True
-        normal_obj_map.suffix = "{str(bpy.context.scene.MB_MT_NormalOBJSettings.suffix)[1:]}"
+        normal_obj_map.suffix = "{str(bpy.context.scene.BF_MT_NormalOBJSettings.suffix)[1:]}"
         
-        normal_obj_map.flipX = {bpy.context.scene.MB_MT_NormalOBJSettings.flip_x}
-        normal_obj_map.flipY = {bpy.context.scene.MB_MT_NormalOBJSettings.flip_y}
-        normal_obj_map.flipZ = {bpy.context.scene.MB_MT_NormalOBJSettings.flip_z}
+        normal_obj_map.flipX = {bpy.context.scene.BF_MT_NormalOBJSettings.flip_x}
+        normal_obj_map.flipY = {bpy.context.scene.BF_MT_NormalOBJSettings.flip_y}
+        normal_obj_map.flipZ = {bpy.context.scene.BF_MT_NormalOBJSettings.flip_z}
         
         """) #bug of flipping normal due to error in the api, Request made on marmoset server
     
@@ -131,17 +131,17 @@ def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
         sb.section(f"""
         height_map = baker.getMap("Height")
         height_map.enabled = True
-        height_map.suffix = "{str(bpy.context.scene.MB_MT_HeightSettings.suffix)[1:]}"
-        height_map.innerDistance = {bpy.context.scene.MB_MT_HeightSettings.inner_distance}
-        height_map.outerDistance = {bpy.context.scene.MB_MT_HeightSettings.outer_distance}
+        height_map.suffix = "{str(bpy.context.scene.BF_MT_HeightSettings.suffix)[1:]}"
+        height_map.innerDistance = {bpy.context.scene.BF_MT_HeightSettings.inner_distance}
+        height_map.outerDistance = {bpy.context.scene.BF_MT_HeightSettings.outer_distance}
         """)
     
     if 'POSITION' in enable_map_types:
         sb.section(f"""
         position_map = baker.getMap("Position")
         position_map.enabled = True
-        position_map.suffix = "{str(bpy.context.scene.MB_MT_PositionSettings.suffix)[1:]}"
-        normalization_properities = "{str(bpy.context.scene.MB_MT_PositionSettings.normalization)}"
+        position_map.suffix = "{str(bpy.context.scene.BF_MT_PositionSettings.suffix)[1:]}"
+        normalization_properities = "{str(bpy.context.scene.BF_MT_PositionSettings.normalization)}"
         match normalization_properities:
             case "BOUNDINGBOX":
                 position_map.normalization = "Bounding Box"
@@ -156,30 +156,30 @@ def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
         sb.section(f"""
         curvature_map = baker.getMap("Curvature")
         curvature_map.enabled = True
-        curvature_map.suffix = "{str(bpy.context.scene.MB_MT_CurveSettings.suffix)[1:]}"
-        curvature_map.strength = {bpy.context.scene.MB_MT_CurveSettings.strength}
+        curvature_map.suffix = "{str(bpy.context.scene.BF_MT_CurveSettings.suffix)[1:]}"
+        curvature_map.strength = {bpy.context.scene.BF_MT_CurveSettings.strength}
         """)
     
     if 'THICKNESS' in enable_map_types:
         sb.section(f"""
         thickness_map = baker.getMap("Thickness")
         thickness_map.enabled = True
-        thickness_map.suffix = "{str(bpy.context.scene.MB_MT_ThicknessSettings.suffix)[1:]}"
-        thickness_map.rayCount = {bpy.context.scene.MB_MT_ThicknessSettings.ray_count}
+        thickness_map.suffix = "{str(bpy.context.scene.BF_MT_ThicknessSettings.suffix)[1:]}"
+        thickness_map.rayCount = {bpy.context.scene.BF_MT_ThicknessSettings.ray_count}
         """)
     
     if 'AMBIANT_OCCLUSION' in enable_map_types:
         sb.section(f"""
         ao_map = baker.getMap("Ambient Occlusion")
         ao_map.enabled = True
-        ao_map.suffix = "{str(bpy.context.scene.MB_MT_AOSettings.suffix)[1:]}"
-        ao_map.rayCount = {bpy.context.scene.MB_MT_AOSettings.ray_count}
-        ao_map.searchDistance = {bpy.context.scene.MB_MT_AOSettings.search_distance}
-        ao_map.cosineWeight = {bpy.context.scene.MB_MT_AOSettings.cavity_weight}
-        ao_map.floorOcclusion = {bpy.context.scene.MB_MT_AOSettings.floor_occlusion}
-        ao_map.floor = {bpy.context.scene.MB_MT_AOSettings.floor_strength}
-        ao_map.twoSided = {bpy.context.scene.MB_MT_AOSettings.two_sided}
-        ao_map.ignoreGroups = {bpy.context.scene.MB_MT_AOSettings.ignore_groups}
+        ao_map.suffix = "{str(bpy.context.scene.BF_MT_AOSettings.suffix)[1:]}"
+        ao_map.rayCount = {bpy.context.scene.BF_MT_AOSettings.ray_count}
+        ao_map.searchDistance = {bpy.context.scene.BF_MT_AOSettings.search_distance}
+        ao_map.cosineWeight = {bpy.context.scene.BF_MT_AOSettings.cavity_weight}
+        ao_map.floorOcclusion = {bpy.context.scene.BF_MT_AOSettings.floor_occlusion}
+        ao_map.floor = {bpy.context.scene.BF_MT_AOSettings.floor_strength}
+        ao_map.twoSided = {bpy.context.scene.BF_MT_AOSettings.two_sided}
+        ao_map.ignoreGroups = {bpy.context.scene.BF_MT_AOSettings.ignore_groups}
         
         """)
     
@@ -187,14 +187,14 @@ def sec_maps(sb: ScriptBuilder, cfg: MarmoConfig):
         sb.section(f"""
         ao2_map = baker.getMap("Ambient Occlusion (2)")
         ao2_map.enabled = True
-        ao2_map.suffix = "{str(bpy.context.scene.MB_MT_AO2Settings.suffix)[1:]}"
-        ao2_map.rayCount = {bpy.context.scene.MB_MT_AO2Settings.ray_count}
-        ao2_map.searchDistance = {bpy.context.scene.MB_MT_AO2Settings.search_distance}
-        ao2_map.cosineWeight = {bpy.context.scene.MB_MT_AO2Settings.cavity_weight}
-        ao2_map.floorOcclusion = {bpy.context.scene.MB_MT_AO2Settings.floor_occlusion}
-        ao2_map.floor = {bpy.context.scene.MB_MT_AO2Settings.floor_strength}
-        ao2_map.twoSided = {bpy.context.scene.MB_MT_AO2Settings.two_sided}
-        ao2_map.ignoreGroups = {bpy.context.scene.MB_MT_AO2Settings.ignore_groups}
+        ao2_map.suffix = "{str(bpy.context.scene.BF_MT_AO2Settings.suffix)[1:]}"
+        ao2_map.rayCount = {bpy.context.scene.BF_MT_AO2Settings.ray_count}
+        ao2_map.searchDistance = {bpy.context.scene.BF_MT_AO2Settings.search_distance}
+        ao2_map.cosineWeight = {bpy.context.scene.BF_MT_AO2Settings.cavity_weight}
+        ao2_map.floorOcclusion = {bpy.context.scene.BF_MT_AO2Settings.floor_occlusion}
+        ao2_map.floor = {bpy.context.scene.BF_MT_AO2Settings.floor_strength}
+        ao2_map.twoSided = {bpy.context.scene.BF_MT_AO2Settings.two_sided}
+        ao2_map.ignoreGroups = {bpy.context.scene.BF_MT_AO2Settings.ignore_groups}
         """)
     
     if 'OBJECT_ID' in enable_map_types:
@@ -219,7 +219,7 @@ def sec_material_sync(sb: ScriptBuilder, cfg: MarmoConfig):
     default_material = next((mat for mat in materials if mat.name == "Default"), None)
     
     if normal_map:
-        normal_map.flipY = {bpy.context.scene.MB_MT_NormalSettings.flip_y}
+        normal_map.flipY = {bpy.context.scene.BF_MT_NormalSettings.flip_y}
         if default_material:
             default_material.setProperty("normalFlipY", True)
             print("Flip Y for normals enabled on Default material.")
