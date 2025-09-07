@@ -97,6 +97,12 @@ class MB_MT_Preferences(bpy.types.AddonPreferences):
         default=r"C:\Program Files\Marmoset\Toolbag 5\Toolbag.exe",
         subtype='FILE_PATH'
     )
+    use_tarmundsaddons_panel: bpy.props.BoolProperty(
+        name="Use Tarmunds Addons Panel",
+        description="Integrate Marmoset Toolbag Bridge into the Tarmunds Addons panel",
+        default=False,
+        update=lambda self, context: bpy.ops.wm.restart_addon()  # Restart the addon to apply changes
+    )
 
     def draw(self, context):
         layout = self.layout

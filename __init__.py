@@ -1,11 +1,11 @@
 ﻿# marmoset_bridge/__init__.py
 bl_info = {
-    "name": "Marmoset Bridge",
+    "name": "BakeFlow",
     "author": "Tarmunds",
-    "version": (0, 5, 0),
+    "version": (0, 9, 0),
     "blender": (4, 5, 0),
     "location": "View3D > Tarmunds Addons > Marmoset Bridge",
-    "description": "",
+    "description": "Tool",
     "tracker_url": "https://discord.gg/h39W5s5ZbQ",
     "category": "Import-Export",
 }
@@ -28,6 +28,7 @@ _SUBMODULES = (
     "MarmosetBridge.Properties",
     "MarmosetBridge.Operators",
     "MarmosetBridge.Panels",
+    
 )
 
 # Import them relative to this package name

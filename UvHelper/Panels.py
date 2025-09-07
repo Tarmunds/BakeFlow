@@ -1,12 +1,15 @@
 ﻿import bpy
 from .Functions import GoToLine
 
+
 class MB_UH_Panel(bpy.types.Panel):
-    bl_label = "MB UV Helper"
-    bl_idname = "VIEW3D_PT_MB_UH_Panel"
+    bl_label = "UV Helper"
+    bl_idname = "VIEW3D_BF_1_UH_Panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = 'Tarmunds Addons'
+    bl_category = 'BakeFlow'
+
+        
     def draw(self, context):
         layout = self.layout
         scene = context.scene

@@ -19,11 +19,11 @@ class MB_MT_MapPanel_Presets(bpy.types.Menu):
 
 class MB_MT_Panel(bpy.types.Panel):
     """Panel for the low and high mesh operations"""
-    bl_label = "MB Marmoset Toolbag Bridge"
-    bl_idname = "VIEW3D_PT_MB_MT_Panel"
+    bl_label = "Marmoset Toolbag Bridge"
+    bl_idname = "VIEW3D_PT_BF_3_MT_Panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = 'Tarmunds Addons'
+    bl_category = 'BakeFlow'
 
     def draw(self, context):
         layout = self.layout
@@ -69,11 +69,11 @@ class MB_MT_Panel(bpy.types.Panel):
 
 class  MB_MT_MapsPanel(bpy.types.Panel):
     """Panel for the low and high mesh operations"""
-    bl_label = "MB Marmoset Toolbag Bridge - Maps"
-    bl_idname = "VIEW3D_PT_MB_MT_MapsPanel"
+    bl_label = "Marmoset Toolbag Bridge - Maps"
+    bl_idname = "VIEW3D_PT_BF_4_MT_MapsPanel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = 'Tarmunds Addons'
+    bl_category = 'BakeFlow'
     
     def draw(self, context):
         layout = self.layout

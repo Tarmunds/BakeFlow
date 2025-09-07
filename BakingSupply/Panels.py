@@ -3,11 +3,11 @@ from .Functions import GoToLine
 
 class MB_BS_Panel(bpy.types.Panel):
     """Panel for the low and high mesh operations"""
-    bl_label = "MB Baking Supply"
-    bl_idname = "VIEW3D_PT_MB_BS_Panel"
+    bl_label = "Baking Supply"
+    bl_idname = "VIEW3D_PT_BF_2_BS_Panel"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = 'Tarmunds Addons'
+    bl_category = 'BakeFlow'
     def draw(self, context):
         layout = self.layout
         scene = context.scene
