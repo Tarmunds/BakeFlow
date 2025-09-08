@@ -2,11 +2,50 @@
 
 
 #-----------Naming Operators-----------#
+# renmaing operators
+
+class BF_BS_Renaming(bpy.types.Operator):
+    bl_idname = "object.bf_bs_renaming_operator"
+    bl_label = "Renaming Operator"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        # Prevent running outside object mode entirely
+        return context.mode == 'OBJECT'    
+
+    def execute(self, context):
+        NameOfMeshes = bpy.context.scene.BF_BS_Properties.RenameName
+        count = 1
+        selected_objects = context.selected_objects
+        
+        if not selected_objects:
+            self.report({'WARNING'}, "No objects selected. Please select at least one mesh object.")
+            return {'CANCELLED'}
+        
+        if not NameOfMeshes.strip():
+            self.report({'ERROR'}, "Name cannot be empty. Please provide a name.")
+            return {'CANCELLED'}
+        
+        for obj in selected_objects:
+            if obj.type == 'MESH':
+                obj.name = f"{NameOfMeshes}_{count:02}"
+                count += 1
+
+        return {'FINISHED'}
+
+
 
 # Operator to replace "_high" with "_low" and vice versa
 class BF_BS_SwitchSuffix(bpy.types.Operator):
     bl_idname = "object.bf_bs_switch_suffix"
     bl_label = "High <> Low"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        # Prevent running outside object mode entirely
+        return context.mode == 'OBJECT'
 
     def execute(self, context):
         pattern = re.compile(r'(_high|_low)', re.IGNORECASE)
@@ -24,6 +63,12 @@ class BF_BS_SwitchSuffix(bpy.types.Operator):
 class BF_BS_AddSuffix(bpy.types.Operator):
     bl_idname = "object.bf_bs_add_suffix"
     bl_label = "Add Suffix"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        # Prevent running outside object mode entirely
+        return context.mode == 'OBJECT'
 
     rename_type: bpy.props.StringProperty(name="Rename Type")
 
@@ -40,6 +85,12 @@ class BF_BS_AddSuffix(bpy.types.Operator):
 class BF_BS_TransferName(bpy.types.Operator):
     bl_idname = "object.bf_bs_transfer_name_suffix"
     bl_label = "Transfer Name"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        # Prevent running outside object mode entirely
+        return context.mode == 'OBJECT'
 
     def execute(self, context):
         active_obj = context.active_object
@@ -83,6 +134,7 @@ class BF_BS_ShowLow(bpy.types.Operator):
     """Operator to show or hide meshes with '_low' in their name"""
     bl_idname = "object.bf_bs_show_low_meshes"
     bl_label = "Show Low"
+    bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
         for obj in bpy.data.objects:
@@ -137,9 +189,14 @@ class BF_BS_Export(bpy.types.Operator):
     
     suffix_to_export: bpy.props.StringProperty(name="Suffix to Export")
 
+    @classmethod
+    def poll(cls, context):
+        # Prevent running outside object mode entirely
+        return context.mode == 'OBJECT'
+
     def execute(self, context):
         scene = context.scene
-        properities = context.scene.MB_BS_Properties
+        properities = context.scene.BF_BS_Properties
         suffix_to_export = self.suffix_to_export.lower()
         selected_objects = [obj for obj in context.selected_objects if suffix_to_export in obj.name]
 
@@ -187,6 +244,7 @@ class BF_BS_Export(bpy.types.Operator):
 #-----------Register-----------#
 
 _classes = (
+    BF_BS_Renaming,
     BF_BS_SwitchSuffix,
     BF_BS_AddSuffix,
     BF_BS_TransferName,

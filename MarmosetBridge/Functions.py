@@ -226,6 +226,21 @@ def sec_material_sync(sb: ScriptBuilder, cfg: MarmoConfig):
         else:
             print("Default material not found.")
     """)
+    
+def sec_bake_group(sb: ScriptBuilder, cfg: MarmoConfig):
+    if bpy.context.scene.BF_MT_Properties.OverideMaxOffset:
+        sb.section(f"""
+        all_objects = mset.getAllObjects()
+        TargetObjects = []
+        
+        for obj in all_objects:
+            if isinstance(obj, mset.BakerTargetObject):
+                TargetObjects.append(obj)
+            
+        for obj in TargetObjects:
+            obj.minOffset = 0.0
+            obj.maxOffset = {bpy.context.scene.BF_MT_Properties.MaxOffset}
+        """)
 
 def sec_finalize(sb: ScriptBuilder, cfg: MarmoConfig):
     sb.line_if(cfg.quick_bake, "baker.bake()")
@@ -238,6 +253,7 @@ def build_marmoset_script(cfg: MarmoConfig) -> str:
     sec_imports(sb, cfg)
     sec_core_params(sb, cfg)
     sec_maps(sb, cfg)
+    sec_bake_group(sb, cfg)
     #sec_material_sync(sb, cfg)
     sec_finalize(sb, cfg)
     return sb.build()

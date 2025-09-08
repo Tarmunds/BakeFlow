@@ -16,6 +16,11 @@ class BF_BS_Properties(bpy.types.PropertyGroup):
         description="Toggle to show or hide path options",
         default=False
     )
+    RenameName: bpy.props.StringProperty(
+        name="Rename Name",
+        description="New base name for renaming objects",
+        default=""
+    )
     
 _classes = (BF_BS_Properties,)
 

@@ -29,7 +29,8 @@ class BF_UH_ContourSelect(bpy.types.Operator):
 class BF_UH_SeamSharpEdges(bpy.types.Operator):
     bl_idname = "object.bf_uh_seam_sharp_edges"
     bl_label = "Tag Seam and Sharp Edges"
-    
+    bl_options = {'REGISTER', 'UNDO'}
+
     tag: bpy.props.BoolProperty(name="Tag", default=True)
     
     @classmethod
@@ -47,6 +48,7 @@ class BF_UH_SeamSharpEdges(bpy.types.Operator):
 class BF_UH_ClearSplitNormals(bpy.types.Operator):
     bl_idname = "object.bf_uh_clear_split_normals"
     bl_label = "Clear Split Normals"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(cls, context):
@@ -60,6 +62,7 @@ class BF_UH_ClearSplitNormals(bpy.types.Operator):
 class BF_UH_AddModifier(bpy.types.Operator):
     bl_idname = "object.bf_uh_add_modifier"
     bl_label = "Add Modifier to Selected"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(cls, context):

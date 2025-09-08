@@ -227,6 +227,22 @@ class BF_MT_Properties(bpy.types.PropertyGroup):
         default='OPENGL',
         update= _UpdateNormalOrientation
     )
+    #-----------BakeGroup-----------#
+    OverideMaxOffset: bpy.props.BoolProperty(
+        name="Override Max Offset",
+        description="Override the maximum offset for baking",
+        default=False
+    )
+    MaxOffset: bpy.props.FloatProperty(
+        name="Max Offset",
+        description="Maximum offset for baking",
+        default=4.0,
+        min=0.0,
+        max=64.0,
+        step=0.1,
+        precision=3
+    )
+    
 
 # ===================== Ui List =====================
 

@@ -22,17 +22,25 @@ class BF_BS_Panel(bpy.types.Panel):
         row.operator("object.bf_bs_show_low_meshes", text="Show Low")
         #Suffix Buttons
         layout.separator()
+        
+        row = GoToLine(layout, align=False)
+        row.operator("object.bf_bs_renaming_operator", text="Rename")
+        row.prop(properities, "RenameName", text="")
+        
+        
         col = layout.column(align=True)
         row = col.row(align=True)
         row.scale_y = 1.2
         row.operator("object.bf_bs_add_suffix", text="Add _high").rename_type = "high"
         row.operator("object.bf_bs_add_suffix", text="Add _low").rename_type = "low"
-        col.operator("object.bf_bs_switch_suffix", text="High <> Low")
-        col.operator("object.bf_bs_transfer_name_suffix", text="Transfer Name")
+        
+        row = GoToLine(layout, align=False)
+        row.operator("object.bf_bs_switch_suffix", text="High <> Low")
+        row.operator("object.bf_bs_transfer_name_suffix", text="Transfer Name")
         #Export Buttons
         layout.separator()
         row = GoToLine(layout)
-        row.prop(properities, "Name", text="Name of the files")
+        row.prop(properities, "Name", text="Files Name")
         
         row = layout.row()
         row.scale_y = 1.5
