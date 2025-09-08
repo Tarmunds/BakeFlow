@@ -11,6 +11,7 @@ from .Properties import MarmoConfig
 class BF_MT_Map_add(bpy.types.Operator):
     bl_idname = "ui_list.bf_mt_map_add"
     bl_label = "Add Item"
+    bl_description = "Add a new map to bake"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -24,6 +25,7 @@ class BF_MT_Map_add(bpy.types.Operator):
 class BF_MT_Map_remove(bpy.types.Operator):
     bl_idname = "ui_list.bf_mt_map_remove"
     bl_label = "Remove Item"
+    bl_description = "Remove the selected map"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):
@@ -38,6 +40,7 @@ class BF_MT_Map_remove(bpy.types.Operator):
 class BF_MT_Map_move(bpy.types.Operator):
     bl_idname = "ui_list.bf_mt_map_move"
     bl_label = "Move Item"
+    bl_description = "Move the selected map up or down"
     direction: bpy.props.EnumProperty(items=(('UP', 'Up', ""), ('DOWN', 'Down', "")))
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -119,6 +122,7 @@ class Launcher:
 class BF_MT_ExportToMarmoset(bpy.types.Operator):
     bl_idname = "object.bf_mt_export_to_marmoset"
     bl_label = "Export and Launch Marmoset"
+    bl_description = "Export selected high and/or low meshes and launch Marmoset Toolbag with baking setup"
 
     # Optional: let user pick a preset by name via Operator property
     preset_name: bpy.props.StringProperty(
@@ -201,6 +205,7 @@ class BF_MT_ExportToMarmoset(bpy.types.Operator):
 class BF_MT_MapProperties_AddPreset(AddPresetBase, bpy.types.Operator):
     bl_idname = 'mbmt.mapproperties_addpreset'
     bl_label = 'Add preset'
+    bl_description = "Add a new preset"
     preset_menu = 'BF_MT_MapPanel_Presets'
 
     preset_defines = [ 'mapcontainer = bpy.context.scene.BF_MT_MapContainer',

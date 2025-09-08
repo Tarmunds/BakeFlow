@@ -3,6 +3,7 @@ from .Functions import *
 class BF_UH_EdgesByNormal(bpy.types.Operator):
     bl_idname = "object.bf_uh_edges_by_normal"
     bl_label = "Select Edges by Normal Difference"
+    bl_description = "Select edges based on the angle between adjacent face normals"
 
     @classmethod
     def poll(cls, context):
@@ -16,6 +17,7 @@ class BF_UH_EdgesByNormal(bpy.types.Operator):
 class BF_UH_ContourSelect(bpy.types.Operator):
     bl_idname = "object.bf_uh_contour_select"
     bl_label = "Select Contour Edges"
+    bl_description = "Select contour edges of the selection"
     
     @classmethod
     def poll(cls, context):
@@ -29,6 +31,7 @@ class BF_UH_ContourSelect(bpy.types.Operator):
 class BF_UH_SeamSharpEdges(bpy.types.Operator):
     bl_idname = "object.bf_uh_seam_sharp_edges"
     bl_label = "Tag Seam and Sharp Edges"
+    bl_description = "Tag or Clean selected edges of seam and sharp"
     bl_options = {'REGISTER', 'UNDO'}
 
     tag: bpy.props.BoolProperty(name="Tag", default=True)
@@ -48,6 +51,7 @@ class BF_UH_SeamSharpEdges(bpy.types.Operator):
 class BF_UH_ClearSplitNormals(bpy.types.Operator):
     bl_idname = "object.bf_uh_clear_split_normals"
     bl_label = "Clear Split Normals"
+    bl_description = "Clear custom split normals from selected meshes"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -62,6 +66,7 @@ class BF_UH_ClearSplitNormals(bpy.types.Operator):
 class BF_UH_AddModifier(bpy.types.Operator):
     bl_idname = "object.bf_uh_add_modifier"
     bl_label = "Add Modifier to Selected"
+    bl_description = "Add a Trangulate and a Weighted Normals modifier to selected meshes"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -76,6 +81,7 @@ class BF_UH_AddModifier(bpy.types.Operator):
 class BF_UH_Ngon(bpy.types.Operator):
     bl_idname = "object.bf_uh_ngon"
     bl_label = "Select Ngon Faces"
+    bl_description = "Detect and select ngons in the mesh range"
    
     def execute(self, context):
         ngon_detector(self, context)
