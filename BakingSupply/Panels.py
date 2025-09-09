@@ -26,6 +26,7 @@ class BF_BS_Panel(bpy.types.Panel):
         row = GoToLine(layout, align=False)
         row.operator("object.bf_bs_renaming_operator", text="Rename")
         row.prop(properities, "RenameName", text="")
+        row.operator("object.bf_mt_openurl", text="", icon='HELP').url = "https://docs.marmoset.co/docs/baking-attributes/#quick-loader"
         
         
         col = layout.column(align=True)
@@ -51,14 +52,22 @@ class BF_BS_Panel(bpy.types.Panel):
         if not properities.ShowPathOptions:
             row = col.row()
             row.prop(properities, "ShowPathOptions", icon='TRIA_RIGHT', text="", emboss=False, toggle=True)
-            row.label(text="Path Option")
+            row.label(text="Mesh Output Path")
+            if not properities.ExportPath:
+                row.label(text="Current: Mesh export at blend files location")
+            else:
+                row.label(text=f"Current: {properities.ExportPath}")
         else :
             box = layout.box()
             row = box.row()
             row.prop(properities, "ShowPathOptions", icon='TRIA_DOWN', text="", emboss=False, toggle=True)
-            row.label(text="Path Option")
+            row.label(text="Mesh Output Path")
+            if not properities.ExportPath:
+                row.label(text="Current: Mesh export at blend files location")
+            else:
+                row.label(text=f"Current: {properities.ExportPath}")
             row = GoToLine(box)
-            row.prop(properities, "ExportPath", text="Export Path")
+            row.prop(properities, "ExportPath", text="Mesh Export Path")
 
     def draw_header_preset(self, context):
         layout = self.layout

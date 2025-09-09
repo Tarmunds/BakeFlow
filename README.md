@@ -90,6 +90,17 @@ After enabling the add-on, you’ll find a new **BakeFlow** category in the `N` 
     - Export to Toolbag, configure map settings, bake directly, and pull results.
 
 ---
+I hope you will like this little addon of mine.
+
+It took quite a lot of time to make it and I want to keep it free, for students and people who can't afford it.
+
+However if you want to support me and my work don't hesitate to tip me.
+
+So I can buy fancy toys for my cats :D (and something to leverage my setup)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H11KF5YQ)
+
+---
 
 ## 👤 Author
 

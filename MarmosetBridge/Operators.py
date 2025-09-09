@@ -6,6 +6,15 @@ from bl_operators.presets import AddPresetBase
 from .Functions import ensure, build_marmoset_script, get_prefs, get_path_abs, next_unused_enum
 from .Properties import MarmoConfig
 
+class BF_MT_HelpURL(bpy.types.Operator):
+    bl_idname = "object.bf_mt_openurl"
+    bl_label = "Open Marmoset Naming Conventions"
+    bl_description = "Open the Marmoset Toolbag naming conventions documentation"
+    url: bpy.props.StringProperty()
+    def execute(self, context):
+        bpy.ops.wm.url_open(url=self.url)
+        return {'FINISHED'}
+
 # ===================== Ui List Operators =====================
 
 class BF_MT_Map_add(bpy.types.Operator):
@@ -268,6 +277,7 @@ _classes = (
     BF_MT_Map_move,
     BF_MT_ExportToMarmoset,
     BF_MT_MapProperties_AddPreset,
+    BF_MT_HelpURL,
 )
 
 def register():

@@ -110,6 +110,12 @@ class BF_MT_Preferences(bpy.types.AddonPreferences):
         layout.prop(self, "marmoset_path")
 
 class BF_MT_Properties(bpy.types.PropertyGroup):
+    #-----------Panel-----------#
+    TexturePathOptions: bpy.props.BoolProperty(
+        name="Texture Path Options",
+        description="Show or hide texture path options",
+        default=True
+    )
     #-----------Exporter-----------#
     DirectBake: bpy.props.BoolProperty(
         name="Direct Bake",

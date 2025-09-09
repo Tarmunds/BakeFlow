@@ -33,16 +33,35 @@ class BF_MT_Panel(bpy.types.Panel):
         row = layout.row()
         row.scale_y = 2
         row.operator("object.bf_mt_export_to_marmoset", text="Export & Launch Marmoset", icon='MONKEY')
-        layout.separator()
 
         row = GoToLine(layout, align=False)
         row.prop(properties, "DirectBake", text="Quick Bake", toggle=True)
         row.prop(properties, "SendProperties", text="Send Properties", toggle=True)
-        row = GoToLine(layout)
-        row.prop(properties, "SamePathAsMesh")
-        sub = row.row()
-        sub.enabled = not properties.SamePathAsMesh
-        sub.prop(properties, "BakingPath")
+        layout.separator()
+        
+        if not properties.TexturePathOptions:
+            row = GoToLine(layout)
+            row.prop(properties, "TexturePathOptions", icon='TRIA_RIGHT', text="", emboss=False, toggle=True)
+            row.label(text="Texture Output Path")
+            if properties.SamePathAsMesh:
+                row.label(text="Current: Same Path as the Mesh")
+            else:
+                if not properties.BakingPath:
+                    row.label(text="Current: Export Path not set")
+                else:
+                    row.label(text=f"Current: {properties.BakingPath}")
+        else :
+            box = layout.box()
+            row = box.row()
+            row.scale_y = 1.2
+            row.prop(properties, "TexturePathOptions", icon='TRIA_DOWN', text="", emboss=False, toggle=True)
+            row.label(text="Texture Output Path")
+            row.prop(properties, "SamePathAsMesh", text="Same Path as the Mesh", toggle=False)
+            sub = GoToLine(box)
+            sub.enabled = not properties.SamePathAsMesh
+            sub.prop(properties, "BakingPath", text="Texture Path")
+            
+
         row = GoToLine(layout)
         row.prop(properties, "Samples")
         row = GoToLine(layout)

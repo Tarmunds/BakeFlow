@@ -28,6 +28,10 @@ class BF_BS_Renaming(bpy.types.Operator):
             self.report({'ERROR'}, "Name cannot be empty. Please provide a name.")
             return {'CANCELLED'}
         
+        if len(selected_objects) == 1:
+            selected_objects[0].name = NameOfMeshes
+            return {'FINISHED'}
+        
         for obj in selected_objects:
             if obj.type == 'MESH':
                 obj.name = f"{NameOfMeshes}_{count:02}"
