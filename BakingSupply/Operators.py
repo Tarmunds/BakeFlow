@@ -126,7 +126,7 @@ class BF_BS_TransferName(bpy.types.Operator):
             if obj != active_obj and obj.type == 'MESH':
                 new_name = base_name
                 while new_name in existing_names:
-                    new_name = f"{base_name}_{count}"
+                    new_name = f"{base_name}_{count:02}"
                     count += 1
                 obj.name = new_name
                 existing_names.add(new_name)
