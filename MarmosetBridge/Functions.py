@@ -252,7 +252,8 @@ def build_marmoset_script(cfg: MarmoConfig) -> str:
     sec_header(sb)
     sec_imports(sb, cfg)
     sec_core_params(sb, cfg)
-    sec_maps(sb, cfg)
+    if bpy.data.scenes["Scene"].BF_MT_Properties.SendMapSettings :
+        sec_maps(sb, cfg)
     sec_bake_group(sb, cfg)
     #sec_material_sync(sb, cfg)
     sec_finalize(sb, cfg)

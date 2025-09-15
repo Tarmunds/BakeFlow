@@ -130,7 +130,7 @@ class BF_MT_Properties(bpy.types.PropertyGroup):
     SendMapSettings: bpy.props.BoolProperty(
         name="Send Map Settings",
         description="Toggle to send or not Map properties",
-        default=True
+        default=False
     )
     #-----------Baker-----------#
     BakingPath: bpy.props.StringProperty(
