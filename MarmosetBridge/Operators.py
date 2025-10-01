@@ -202,7 +202,7 @@ class BF_MT_ExportToMarmoset(bpy.types.Operator):
         ExportService.export_if_needed(context)
 
         # Build script and launch Toolbag
-        code = build_marmoset_script(cfg)
+        code = build_marmoset_script(cfg, context)
         script_path = Launcher.write_temp_script(code)
         Launcher.launch(cfg.marmoset_path, script_path)
         self.report({'INFO'}, "Marmoset Toolbag launched and setup.")

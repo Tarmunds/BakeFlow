@@ -247,13 +247,19 @@ def sec_finalize(sb: ScriptBuilder, cfg: MarmoConfig):
     sb.line_if(cfg.quick_bake, "baker.applyPreviewMaterial()")
     sb.line('print("Marmoset bake project created and models loaded.")')
 
-def build_marmoset_script(cfg: MarmoConfig) -> str:
+def build_marmoset_script(cfg: MarmoConfig, context) -> str:
     sb = ScriptBuilder()
     sec_header(sb)
     sec_imports(sb, cfg)
     sec_core_params(sb, cfg)
-    if bpy.data.scenes["Scene"].BF_MT_Properties.SendMapSettings :
+
+    props = getattr(context.scene, "BF_MT_Properties", None)
+    if props and getattr(props, "SendMapSettings", False):
         sec_maps(sb, cfg)
+    
+    #if bpy.data.scenes["Scene"].BF_MT_Properties.SendMapSettings :
+    #    sec_maps(sb, cfg)
+    
     sec_bake_group(sb, cfg)
     #sec_material_sync(sb, cfg)
     sec_finalize(sb, cfg)
