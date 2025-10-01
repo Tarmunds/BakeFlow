@@ -145,7 +145,7 @@ class BF_BS_ShowLow(bpy.types.Operator):
     bl_description = "Show meshes with '_low' in their name"
 
     def execute(self, context):
-        for obj in bpy.data.objects:
+        for obj in context.view_layer.objects:
             if "_low" in obj.name:
                 obj.hide_set(False)
         return {'FINISHED'}
@@ -159,7 +159,7 @@ class BF_BS_HideLow(bpy.types.Operator):
     bl_description = "Hide meshes with '_low' in their name"
 
     def execute(self, context):
-        for obj in bpy.data.objects:
+        for obj in context.view_layer.objects:
             if "_low" in obj.name:
                 obj.hide_set(True)
         return {'FINISHED'}
@@ -173,7 +173,7 @@ class BF_BS_ShowHigh(bpy.types.Operator):
     bl_description = "Show meshes with '_high' in their name"
 
     def execute(self, context):
-        for obj in bpy.data.objects:
+        for obj in context.view_layer.objects:
             if "_high" in obj.name:
                 obj.hide_set(False)
         return {'FINISHED'}
@@ -187,7 +187,7 @@ class BF_BS_HideHigh(bpy.types.Operator):
     bl_description = "Hide meshes with '_high' in their name"
 
     def execute(self, context):
-        for obj in bpy.data.objects:
+        for obj in context.view_layer.objects:
             if "_high" in obj.name:
                 obj.hide_set(True)
         return {'FINISHED'}
