@@ -21,6 +21,11 @@ class BF_BS_Properties(bpy.types.PropertyGroup):
         description="New base name for renaming objects",
         default=""
     )
+    exported_in_pose: bpy.props.BoolProperty(
+        name="Exported In Pose",
+        description="try to export in pose mode, warning, this will temporarily duplicate your mesh for the export so it's way more heavy on memory usage, especially with high poly meshes",
+        default=False
+    )
     
 _classes = (BF_BS_Properties,)
 

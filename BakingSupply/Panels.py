@@ -40,13 +40,15 @@ class BF_BS_Panel(bpy.types.Panel):
         row.operator("object.bf_bs_transfer_name_suffix", text="Transfer Name")
         #Export Buttons
         layout.separator()
-        row = GoToLine(layout)
+        row = GoToLine(layout, align=False)
         row.prop(properities, "Name", text="Files Name")
+        row.prop(properities, "exported_in_pose", text="Export In Pose Mode", toggle=True)
         
         row = layout.row()
         row.scale_y = 1.5
         row.operator("object.export_selected_operator", text="Export High").suffix_to_export = "_high"
         row.operator("object.export_selected_operator", text="Export Low").suffix_to_export = "_low"
+
                
         col= self.layout.column()
         if not properities.ShowPathOptions:

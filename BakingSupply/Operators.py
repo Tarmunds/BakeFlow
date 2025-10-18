@@ -194,6 +194,7 @@ class BF_BS_HideHigh(bpy.types.Operator):
     
 #-----------Exporter-----------#
 
+
 class BF_BS_Export(bpy.types.Operator):
     bl_idname = "object.export_selected_operator"
     bl_label = "Export Selected To Files"
@@ -203,39 +204,32 @@ class BF_BS_Export(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        # Prevent running outside object mode entirely
         return context.mode == 'OBJECT'
 
-    def execute(self, context):
-        scene = context.scene
-        properities = context.scene.BF_BS_Properties
-        suffix_to_export = self.suffix_to_export.lower()
-        selected_objects = [obj for obj in context.selected_objects if suffix_to_export in obj.name]
+    def _resolve_export_path(self, properties, suffix_to_export: str):
+        if properties.ExportPath:
+            return os.path.join(properties.ExportPath.strip(), f"{properties.Name}{suffix_to_export}.fbx")
+        return os.path.join(os.path.dirname(bpy.data.filepath), f"{properties.Name}{suffix_to_export}.fbx")
 
-        if properities.ExportPath:
-            export_path = os.path.join(properities.ExportPath.strip(), f"{properities.Name}{suffix_to_export}.fbx")
-        else :
-            export_path = os.path.join(os.path.dirname(bpy.data.filepath), f"{properities.Name}{suffix_to_export}.fbx")
-        
-        self.report({'INFO'}, f"Export Path: {export_path}")
-         
+    def _validate(self, properties, selected_objects, export_path):
         if not selected_objects:
-            self.report({'WARNING'}, f"No selected objects with {suffix_to_export} in their names.")
-            return {'CANCELLED'}
-
-        if not properities.Name.strip():
+            self.report({'WARNING'}, "No selected objects match the suffix filter.")
+            return False
+        if not properties.Name.strip():
             self.report({'ERROR'}, "Name cannot be empty. Please provide a name.")
-            return {'CANCELLED'}
+            return False
+        export_dir = os.path.dirname(export_path)
+        if not os.path.exists(export_dir):
+            self.report({'ERROR'}, f"Directory does not exist: {export_dir}")
+            return False
+        return True
 
-        if not os.path.exists(os.path.dirname(export_path)):
-            self.report({'ERROR'}, f"Directory does not exist: {os.path.dirname(export_path)}")
-            return {'CANCELLED'}
+    def _export_original_workflow(self, selected_objects, export_path):
+        # Store and adjust selection
+        original_selection = list(bpy.context.selected_objects)
+        original_active = bpy.context.view_layer.objects.active
 
-        # Store the original selection
-        original_selection = bpy.context.selected_objects
         bpy.ops.object.select_all(action='DESELECT')
-
-        # Select only selected objects
         for obj in selected_objects:
             obj.select_set(True)
 
@@ -245,13 +239,121 @@ class BF_BS_Export(bpy.types.Operator):
             self.report({'ERROR'}, f"Permission denied: Unable to write to {export_path}.")
             return {'CANCELLED'}
         finally:
-            # Restore original selection
+            # Restore selection
             bpy.ops.object.select_all(action='DESELECT')
-            for obj in original_selection:
-                obj.select_set(True)
+            for o in original_selection:
+                if o and o.name in bpy.data.objects:
+                    o.select_set(True)
+            if original_active and original_active.name in bpy.data.objects:
+                bpy.context.view_layer.objects.active = original_active
 
-        self.report({'INFO'}, f"Exported successfully to: {export_path}")
         return {'FINISHED'}
+
+    def _export_baked_pose_meshes(self, selected_objects, export_path, context):
+        # Build temp posed meshes from depsgraph
+        depsgraph = context.evaluated_depsgraph_get()
+
+        original_selection = list(bpy.context.selected_objects)
+        original_active = context.view_layer.objects.active
+
+        temp_objects = []
+        try:
+            bpy.ops.object.select_all(action='DESELECT')
+
+            for obj in selected_objects:
+                if obj.type != 'MESH':
+                    continue
+
+                eval_obj = obj.evaluated_get(depsgraph)
+                new_me = bpy.data.meshes.new_from_object(
+                    eval_obj,
+                    preserve_all_data_layers=True,
+                    depsgraph=depsgraph
+                )
+
+                new_obj = bpy.data.objects.new(f"{obj.name}_POSEBAKED", new_me)
+                new_obj.matrix_world = obj.matrix_world
+
+                link_target = obj.users_collection[0] if obj.users_collection else context.collection
+                link_target.objects.link(new_obj)
+
+                for m in list(new_obj.modifiers):
+                    new_obj.modifiers.remove(m)
+
+                new_obj.select_set(True)
+                temp_objects.append(new_obj)
+
+            if not temp_objects:
+                self.report({'ERROR'}, "No mesh objects to export after baking.")
+                return {'CANCELLED'}
+
+            try:
+                bpy.ops.export_scene.fbx(
+                    filepath=export_path,
+                    use_selection=True,
+                    object_types={'MESH'},
+                    use_mesh_modifiers=False,  # geometry is already baked
+                    bake_anim=False,
+                    add_leaf_bones=False,
+                    apply_unit_scale=True,
+                    apply_scale_options='FBX_SCALE_ALL',
+                    path_mode='AUTO'
+                )
+            except PermissionError:
+                self.report({'ERROR'}, f"Permission denied: Unable to write to {export_path}.")
+                return {'CANCELLED'}
+
+        finally:
+            # Cleanup temp objects
+            if temp_objects:
+                bpy.ops.object.select_all(action='DESELECT')
+                for o in temp_objects:
+                    if o and o.name in bpy.data.objects:
+                        o.select_set(True)
+                bpy.ops.object.delete()
+
+            # Restore selection
+            bpy.ops.object.select_all(action='DESELECT')
+            for o in original_selection:
+                if o and o.name in bpy.data.objects:
+                    o.select_set(True)
+            if original_active and original_active.name in bpy.data.objects:
+                context.view_layer.objects.active = original_active
+
+        return {'FINISHED'}
+
+    def execute(self, context):
+        properties = context.scene.BF_BS_Properties
+        if properties is None:
+            self.report({'ERROR'}, "Scene properties 'BF_BS_Properties' not found.")
+            return {'CANCELLED'}
+
+        suffix_to_export = (self.suffix_to_export or "").lower()
+
+        # Filter currently selected objects by suffix
+        selected_objects = [
+            obj for obj in context.selected_objects
+            if suffix_to_export in obj.name.lower()
+        ]
+
+        export_path = self._resolve_export_path(properties, suffix_to_export)
+        self.report({'INFO'}, f"Export Path: {export_path}")
+
+        if not self._validate(properties, selected_objects, export_path):
+            return {'CANCELLED'}
+
+        # Toggle based on BF_BS_Properties.exported_in_pose
+        exported_in_pose = properties.exported_in_pose
+
+        if exported_in_pose:
+            result = self._export_baked_pose_meshes(selected_objects, export_path, context)
+        else:
+            result = self._export_original_workflow(selected_objects, export_path)
+
+        if result == {'FINISHED'}:
+            self.report({'INFO'}, f"Exported successfully to: {export_path}")
+        return result
+
 
 #-----------Register-----------#
 
