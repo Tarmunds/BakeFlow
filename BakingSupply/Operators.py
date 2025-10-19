@@ -291,13 +291,16 @@ class BF_BS_Export(bpy.types.Operator):
                 bpy.ops.export_scene.fbx(
                     filepath=export_path,
                     use_selection=True,
-                    object_types={'MESH'},
-                    use_mesh_modifiers=False,  # geometry is already baked
-                    bake_anim=False,
+                    object_types={'MESH'},          # same for both; for original you can omit or keep
+                    global_scale=1.0,
+                    apply_unit_scale=False,         # disable unit scaling
+                    apply_scale_options='FBX_SCALE_NONE',  # no extra scaling
+                    bake_space_transform=False,     # don't bake extra transforms in exporter
+                    axis_forward='-Z',
+                    axis_up='Y',
+                    path_mode='AUTO',
                     add_leaf_bones=False,
-                    apply_unit_scale=True,
-                    apply_scale_options='FBX_SCALE_ALL',
-                    path_mode='AUTO'
+                    bake_anim=False,
                 )
             except PermissionError:
                 self.report({'ERROR'}, f"Permission denied: Unable to write to {export_path}.")

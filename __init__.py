@@ -4,7 +4,7 @@ from importlib import import_module
 bl_info = {
     "name": "BakeFlow",
     "author": "Tarmunds",
-    "version": (1, 1, 0),
+    "version": (1, 1, 1),
     "blender": (4, 2, 0),
     "location": "View3D > Tarmunds Addons > Marmoset Bridge",
     "description": "Provides a streamlined way from the retopology to uv and automate bake setup.",
