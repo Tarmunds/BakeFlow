@@ -33,9 +33,13 @@ class BF_BS_Renaming(bpy.types.Operator):
             return {'FINISHED'}
         
         for obj in selected_objects:
+            obj.name = f"{NameOfMeshes}_{count:02}"
+            count += 1
+            """
             if obj.type == 'MESH':
                 obj.name = f"{NameOfMeshes}_{count:02}"
                 count += 1
+            """
 
         return {'FINISHED'}
 
