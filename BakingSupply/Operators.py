@@ -86,7 +86,7 @@ class BF_BS_AddSuffix(bpy.types.Operator):
     def execute(self, context):
         rename_type = self.rename_type.lower()
         for obj in bpy.context.selected_objects:
-            if obj.type == 'MESH':
+            if obj.type == 'MESH' or obj.type == 'CURVE':
                 name = obj.name.rstrip("_high_low")  # Remove existing suffix if present
                 obj.name = f"{name}_{rename_type}"
 
@@ -127,7 +127,7 @@ class BF_BS_TransferName(bpy.types.Operator):
         count = 1
 
         for obj in context.selected_objects:
-            if obj != active_obj and obj.type == 'MESH':
+            if obj != active_obj and (obj.type == 'MESH' or obj.type == 'CURVE'):
                 new_name = base_name
                 while new_name in existing_names:
                     new_name = f"{base_name}_{count:02}"
@@ -295,7 +295,7 @@ class BF_BS_Export(bpy.types.Operator):
                 bpy.ops.export_scene.fbx(
                     filepath=export_path,
                     use_selection=True,
-                    object_types={'MESH'},          # same for both; for original you can omit or keep
+                    object_types={'MESH', 'OTHER'},          # same for both; for original you can omit or keep
                     global_scale=1.0,
                     apply_unit_scale=False,         # disable unit scaling
                     apply_scale_options='FBX_SCALE_NONE',  # no extra scaling
