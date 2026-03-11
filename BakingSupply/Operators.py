@@ -265,9 +265,6 @@ class BF_BS_Export(bpy.types.Operator):
             bpy.ops.object.select_all(action='DESELECT')
 
             for obj in selected_objects:
-                if obj.type != 'MESH':
-                    continue
-
                 eval_obj = obj.evaluated_get(depsgraph)
                 new_me = bpy.data.meshes.new_from_object(
                     eval_obj,
