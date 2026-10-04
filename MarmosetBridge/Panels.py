@@ -38,7 +38,9 @@ class BF_MT_Panel(bpy.types.Panel):
         row.prop(properties, "DirectBake", text="Quick Bake", toggle=True)
         row.prop(properties, "SendProperties", text="Send Properties", toggle=True)
         layout.separator()
-        
+
+
+        #Texture Path Options
         if not properties.TexturePathOptions:
             row = GoToLine(layout)
             row.prop(properties, "TexturePathOptions", icon='TRIA_RIGHT', text="", emboss=False, toggle=True)
@@ -56,10 +58,32 @@ class BF_MT_Panel(bpy.types.Panel):
             row.scale_y = 1.2
             row.prop(properties, "TexturePathOptions", icon='TRIA_DOWN', text="", emboss=False, toggle=True)
             row.label(text="Texture Output Path")
-            row.prop(properties, "SamePathAsMesh", text="Same Path as the Mesh", toggle=False)
+            row.prop(properties, "SamePathAsMesh", text="Same Path as the Mesh", toggle=True)
             sub = GoToLine(box)
             sub.enabled = not properties.SamePathAsMesh
             sub.prop(properties, "BakingPath", text="Texture Path")
+
+
+        #Additional High Option
+        if not properties.AdditionalHighOption:
+            row = GoToLine(layout)
+            row.prop(properties, "AdditionalHighOption", icon='TRIA_RIGHT', text="", emboss=False, toggle=True)
+            row.label(text="Additional High Option")
+            if properties.AdditionalHigh and properties.AdditionalHighPath:
+                row.label(text=f"Current: Additional High : {properties.AdditionalHighPath}")
+            else:
+                row.label(text="Current: Additional High Disabled")
+
+        else :
+            box = layout.box()
+            row = box.row()
+            row.scale_y = 1.2
+            row.prop(properties, "AdditionalHighOption", icon='TRIA_DOWN', text="", emboss=False, toggle=True)
+            row.label(text="Additional High Option")
+            row.prop(properties, "AdditionalHigh", toggle=True)
+            sub = GoToLine(box)
+            sub.enabled = properties.AdditionalHigh
+            sub.prop(properties, "AdditionalHighPath", text="Additional High Path")
             
 
         row = GoToLine(layout)

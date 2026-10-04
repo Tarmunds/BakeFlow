@@ -1,3 +1,2 @@
-﻿- link maps settings to marmoset temps files
-- set maps suffix
-- set preset creation and loading
+﻿- set external high
+- sort ui

@@ -156,6 +156,7 @@ class BF_MT_ExportToMarmoset(bpy.types.Operator):
         meshes_folder = properties_bs.ExportPath.strip() if properties_bs.ExportPath.strip() else os.path.dirname(bpy.data.filepath)
         high_fbx = os.path.abspath(os.path.join(meshes_folder, f"{properties_bs.Name}_high.fbx"))
         low_fbx  = os.path.abspath(os.path.join(meshes_folder, f"{properties_bs.Name}_low.fbx"))
+        additional_high_fbx = os.path.abspath(properties.AdditionalHighPath) if properties.AdditionalHigh and properties.AdditionalHighPath else None
 
         # ensure at least one of high or low is selected
         high_sel, low_sel = ExportService.selection_probe(context)
@@ -183,6 +184,7 @@ class BF_MT_ExportToMarmoset(bpy.types.Operator):
             samples=properties.Samples,
             low_fbx=low_fbx if low_sel else None,
             high_fbx=high_fbx if high_sel else None,
+            additional_high_fbx=additional_high_fbx if properties.AdditionalHigh and additional_high_fbx else None,
             normal_flip_y=False,
             quick_bake=properties.DirectBake,
         )

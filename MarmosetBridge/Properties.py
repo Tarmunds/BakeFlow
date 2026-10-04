@@ -116,6 +116,13 @@ class BF_MT_Properties(bpy.types.PropertyGroup):
         description="Show or hide texture path options",
         default=True
     )
+    AdditionalHighOption: bpy.props.BoolProperty(
+        name="Additional High Option",
+        description="Show or hide additional high option",
+        default=False
+    )
+
+
     #-----------Exporter-----------#
     DirectBake: bpy.props.BoolProperty(
         name="Direct Bake",
@@ -132,6 +139,8 @@ class BF_MT_Properties(bpy.types.PropertyGroup):
         description="Toggle to send or not Map properties",
         default=False
     )
+
+
     #-----------Baker-----------#
     BakingPath: bpy.props.StringProperty(
         name="Export Path",
@@ -144,6 +153,21 @@ class BF_MT_Properties(bpy.types.PropertyGroup):
         description="Use the same path as the mesh for baking",
         default=False
     )
+
+    #Additional High Option
+    AdditionalHigh: bpy.props.BoolProperty(
+        name="Additional High",
+    description="Allow additional high mesh for baking",
+        default=False
+    )    
+    AdditionalHighPath: bpy.props.StringProperty(
+        name="Additional High Path",
+        description="Path to the additional high mesh for baking",
+        default="",
+        subtype='FILE_PATH'
+    )
+
+
     Samples: bpy.props.EnumProperty(
         name="Samples",
         description="Number of samples for baking",
@@ -314,6 +338,7 @@ class MarmoConfig:
     # Optional scene inputs
     low_fbx: Optional[str] = None
     high_fbx: Optional[str] = None
+    additional_high_fbx: Optional[str] = None
     cage_fbx: Optional[str] = None
 
     # Common toggles

@@ -70,6 +70,8 @@ def sec_imports(sb: ScriptBuilder, cfg: MarmoConfig):
         sb.line_if(bool(cfg.low_fbx),  f'baker.importModel(r"{win_raw(cfg.low_fbx)}")')
     if cfg.high_fbx:
         sb.line_if(bool(cfg.high_fbx), f'baker.importModel(r"{win_raw(cfg.high_fbx)}")')
+    if cfg.additional_high_fbx:
+        sb.line_if(bool(cfg.additional_high_fbx), f'baker.importModel(r"{win_raw(cfg.additional_high_fbx)}")')
 
 def sec_core_params(sb: ScriptBuilder, cfg: MarmoConfig):
     sb.assign("baker.outputPath",      f'r"{win_raw(cfg.export_path)}"')
