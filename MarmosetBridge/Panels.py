@@ -95,10 +95,10 @@ class BF_MT_Panel(bpy.types.Panel):
         row = GoToLine(layout)
         row.prop(properties, "TileMode")
         row = GoToLine(layout)
-        row.prop(properties, "OverideMaxOffset")
-        sub = row.row()
-        sub.enabled = properties.OverideMaxOffset
-        sub.prop(properties, "MaxOffset", text="   Max Offset")
+        #row.prop(properties, "OverideMaxOffset")
+        #sub = row.row()
+        #sub.enabled = properties.OverideMaxOffset
+        #sub.prop(properties, "MaxOffsetMultiplier", text="   Max Offset Multiplier")
         row = GoToLine(layout)
         row.prop(properties, "NormalOrientation", expand=True)
         row = GoToLine(layout)

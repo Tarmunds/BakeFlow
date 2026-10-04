@@ -229,7 +229,7 @@ def sec_material_sync(sb: ScriptBuilder, cfg: MarmoConfig):
             print("Default material not found.")
     """)
     
-def sec_bake_group(sb: ScriptBuilder, cfg: MarmoConfig):
+def sec_bake_group(sb: ScriptBuilder, cfg: MarmoConfig): #not really working rn as the api store original max offset as a "-1000000.0" value so not reusable
     if bpy.context.scene.BF_MT_Properties.OverideMaxOffset:
         sb.section(f"""
         all_objects = mset.getAllObjects()
@@ -241,7 +241,10 @@ def sec_bake_group(sb: ScriptBuilder, cfg: MarmoConfig):
             
         for obj in TargetObjects:
             obj.minOffset = 0.0
-            obj.maxOffset = {bpy.context.scene.BF_MT_Properties.MaxOffset}
+            current_max_offset = obj.maxOffset
+            print("Current maxOffset for ", obj.name, ": ", current_max_offset)
+            obj.maxOffset = current_max_offset *{bpy.context.scene.BF_MT_Properties.MaxOffsetMultiplier}
+            print("New maxOffset for ", obj.name, ": ", obj.maxOffset)
         """)
 
 def sec_finalize(sb: ScriptBuilder, cfg: MarmoConfig):

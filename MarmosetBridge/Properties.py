@@ -263,14 +263,14 @@ class BF_MT_Properties(bpy.types.PropertyGroup):
         description="Override the maximum offset for baking",
         default=False
     )
-    MaxOffset: bpy.props.FloatProperty(
-        name="Max Offset",
+    MaxOffsetMultiplier: bpy.props.FloatProperty(
+        name="Max Offset Multiplier",
         description="Maximum offset for baking",
-        default=4.0,
-        min=0.0,
-        max=64.0,
+        default=1.0,
+        soft_min=0.5,
+        soft_max=3.0,
         step=0.1,
-        precision=3
+        precision=1
     )
     
 
